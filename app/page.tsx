@@ -14,13 +14,13 @@ const PAPER = '#F4EFE0'
 const RULE = 'rgba(26,18,8,0.15)'
 
 const projects = [
-  { id:'I',   name:'Kiko Navarro',   type:'Web Design · 2024',     img:'/img/portfolios/kikonavarro.jpg', url:'https://kikonavarro.es/' },
-  { id:'II',  name:'Jessica Morari', type:'Branding & Web · 2023', img:'/img/portfolios/jesslnk.webp',   url:'https://jessicamorari.com/' },
-  { id:'III', name:'Javi Beat',      type:'Identity · 2024',       img:'/img/portfolios/javibeat.jpg',    url:'https://javibeat.com/' },
-  { id:'IV',  name:'Estrela Photo',  type:'Portfolio · 2023',      img:'/img/portfolios/estrela.jpg',     url:'https://estrela.photo/' },
-  { id:'V',   name:'Manuel KevSax', type:'Web Design · 2024',      img:'/img/portfolios/manusax.webp',   url:'https://manuelkevsax.com/' },
-  { id:'VI',  name:'Sergio Trumpet', type:'Portfolio · 2024',      img:'/img/portfolios/sergio.jpg',      url:'https://sergiotrumpetdj.com/' },
-  { id:'VII', name:'Julio Cuba',     type:'Identity · 2024',       img:'/img/portfolios/julio.webp',      url:'https://juliocuba.es/' },
+  { id:'I',   name:'Kiko Navarro',   type:'Web Design · 2024',     img:'/img/portfolios/kikonavarro.jpg', url:'https://kikonavarro.es/',       desc:'Legendary DJ & producer.' },
+  { id:'II',  name:'Jessica Morari', type:'Branding & Web · 2023', img:'/img/portfolios/jesslnk.webp',   url:'https://jessicamorari.com/',    desc:'Coaching & wellness platform.' },
+  { id:'III', name:'Javi Beat',      type:'Identity · 2024',       img:'/img/portfolios/javibeat.jpg',    url:'https://javibeat.com/',         desc:'DJ identity from Dubai.' },
+  { id:'IV',  name:'Estrela Photo',  type:'Portfolio · 2023',      img:'/img/portfolios/estrela.jpg',     url:'https://estrela.photo/',        desc:'Photography studio portfolio.' },
+  { id:'V',   name:'Manuel KevSax',  type:'Web Design · 2024',     img:'/img/portfolios/manusax.webp',   url:'https://manuelkevsax.com/',     desc:'Luxury saxophonist booking.' },
+  { id:'VI',  name:'Sergio Trumpet', type:'Portfolio · 2024',      img:'/img/portfolios/sergio.jpg',      url:'https://sergiotrumpetdj.com/', desc:'Professional trumpet player.' },
+  { id:'VII', name:'Julio Cuba',     type:'Identity · 2024',       img:'/img/portfolios/julio.webp',      url:'https://juliocuba.es/',         desc:'Violinist artistic portfolio.' },
 ]
 
 const graphicSlides = [
@@ -337,19 +337,70 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Photo strip — 4 col with HP effect */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', marginTop:'24px', position:'relative', zIndex:1 }}>
-            {projects.slice(0,4).map(p=>(
-              <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', color:'inherit', display:'block' }}>
-                <div className="hp-photo" style={{ position:'relative', aspectRatio:'3/4' }}>
-                  <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover' }} />
-                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'10px 8px', background:'linear-gradient(transparent,rgba(26,18,8,0.8))', zIndex:4 }}>
-                    <div style={{ fontFamily:P, fontSize:'13px', fontWeight:700, color:PAPER, lineHeight:1.2 }}>{p.name}</div>
-                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.15em', textTransform:'uppercase', color:'rgba(244,239,224,0.5)', marginTop:'2px' }}>{p.type}</div>
+          {/* Photo strip — broadsheet style */}
+          <div style={{ marginTop:'24px', position:'relative', zIndex:1 }}>
+            <div className="rule-h" style={{ marginBottom:'10px' }} />
+            <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.35em', textTransform:'uppercase', color:FADE, marginBottom:'10px', textAlign:'center' }}>✦ &nbsp; Portrait Gallery &nbsp; ✦</div>
+            <div className="rule-thin" />
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1px 1fr 1px 1fr 1px 1fr' }}>
+              {projects.slice(0,4).map((p, i) => (
+                <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', color:'inherit', gridColumn: String(i*2+1) }}>
+                  <div style={{ padding:'7px 10px 5px', borderBottom:`1px solid ${RULE}` }}>
+                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.2em', textTransform:'uppercase', color:FADE }}>{p.type.split('·')[0].trim()}</div>
                   </div>
+                  <div className="hp-photo" style={{ position:'relative', aspectRatio:'3/4' }}>
+                    <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover' }} />
+                  </div>
+                  <div style={{ padding:'7px 10px', borderTop:`1px solid ${RULE}` }}>
+                    <div style={{ fontFamily:P, fontSize:'13px', fontWeight:700, color:INK, lineHeight:1.2 }}>{p.name}</div>
+                    <div style={{ fontFamily:F, fontSize:'10px', fontStyle:'italic', color:FADE, marginTop:'2px', lineHeight:1.5 }}>{p.desc}</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+            <div className="rule-h" />
+          </div>
+        </section>
+
+
+        {/* ══ TESTIMONIALS ══════════════════════════════════════ */}
+        <section style={{ padding:'32px 0', borderTop:`4px double ${INK}`, position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:'-10px', left:'-8px', fontFamily:P, fontSize:'clamp(100px,15vw,200px)', fontWeight:900, color:'rgba(26,18,8,0.04)', lineHeight:1, pointerEvents:'none', userSelect:'none' }}>"</div>
+          <div style={{ position:'relative', zIndex:1 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:'16px', alignItems:'center', marginBottom:'10px' }}>
+              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.35em', textTransform:'uppercase', color:FADE, whiteSpace:'nowrap' }}>Client Voices</div>
+              <div style={{ height:'1px', background:RULE }} />
+              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.2em', color:FADE, whiteSpace:'nowrap' }}>On the Record</div>
+            </div>
+            <div className="rule-h" style={{ marginBottom:'0' }} />
+            <div style={{ display:'grid', gridTemplateColumns:'1px 1fr 1px 1fr 1px 1fr 1px', marginTop:'0' }}>
+              <div style={{ background:RULE }} />
+              <div key="t1" style={{ padding:'28px 24px' }}>
+                <div style={{ fontFamily:P, fontSize:'clamp(1rem,1.8vw,1.4rem)', fontWeight:700, fontStyle:'italic', color:INK, lineHeight:1.6, marginBottom:'20px' }}>"True Love Creative understood my brand immediately — and built something I couldn't have imagined myself. My audience felt it straight away."</div>
+                <div style={{ borderTop:`1px solid ${RULE}`, paddingTop:'12px' }}>
+                  <div style={{ fontFamily:P, fontSize:'14px', fontWeight:700, color:RED }}>Kiko Navarro</div>
+                  <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.15em', textTransform:'uppercase', color:FADE, marginTop:'3px' }}>DJ & Producer · kikonavarro.es</div>
                 </div>
-              </a>
-            ))}
+              </div>
+              <div key="r1" style={{ background:RULE }} />
+              <div key="t2" style={{ padding:'28px 24px' }}>
+                <div style={{ fontFamily:P, fontSize:'clamp(1rem,1.8vw,1.4rem)', fontWeight:700, fontStyle:'italic', color:INK, lineHeight:1.6, marginBottom:'20px' }}>"Working with TLC was the first time I felt truly heard by a design studio. The result speaks for itself — my clients book faster and trust me more."</div>
+                <div style={{ borderTop:`1px solid ${RULE}`, paddingTop:'12px' }}>
+                  <div style={{ fontFamily:P, fontSize:'14px', fontWeight:700, color:RED }}>Jessica Morari</div>
+                  <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.15em', textTransform:'uppercase', color:FADE, marginTop:'3px' }}>Wellness Coach · jessicamorari.com</div>
+                </div>
+              </div>
+              <div key="r2" style={{ background:RULE }} />
+              <div key="t3" style={{ padding:'28px 24px' }}>
+                <div style={{ fontFamily:P, fontSize:'clamp(1rem,1.8vw,1.4rem)', fontWeight:700, fontStyle:'italic', color:INK, lineHeight:1.6, marginBottom:'20px' }}>"They didn't just build a portfolio — they built a statement. Clean, fast, and unmistakably mine. My photography finally has a home worthy of it."</div>
+                <div style={{ borderTop:`1px solid ${RULE}`, paddingTop:'12px' }}>
+                  <div style={{ fontFamily:P, fontSize:'14px', fontWeight:700, color:RED }}>Estrela Photo</div>
+                  <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.15em', textTransform:'uppercase', color:FADE, marginTop:'3px' }}>Photography Studio · estrela.photo</div>
+                </div>
+              </div>
+              <div style={{ background:RULE }} />
+            </div>
+            <div className="rule-h" />
           </div>
         </section>
 
