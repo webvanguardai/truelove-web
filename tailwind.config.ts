@@ -9,17 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cream: "#F5F0E8",
-        ink: "#0A0A0A",
-        rust: "#C4472A",
-        gold: "#C9A84C",
-        sage: "#6B7B5E",
+        cream: "#F2EDE4",
+        ink: "#111111",
+        rust: "#B8390E",
+        sand: "#D9C9B0",
+        mist: "#E8E2D9",
       },
-      fontFamily: {
-        serif: ["var(--font-serif)", "Georgia", "serif"],
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
-      },
+      divideOpacity: { 8: '0.08' },
     },
   },
   plugins: [],
