@@ -3,434 +3,337 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
-const S = {
-  cream: '#F0EAE0',
-  ink: '#0A0A0A',
-  rust: '#C23B18',
-  mist: '#E4DDD4',
-}
-
 const projects = [
-  { id: '01', client: 'Kiko Navarro', type: 'Web Design', year: '2024', img: '/img/portfolios/kikonavarro.jpg', desc: 'Legendary DJ & Producer.' },
-  { id: '02', client: 'Jessica Morari', type: 'Branding & Web', year: '2023', img: '/img/portfolios/jesslnk.webp', desc: 'Coaching and wellness platform.' },
-  { id: '03', client: 'Javi Beat', type: 'Identity', year: '2024', img: '/img/portfolios/javibeat.jpg', desc: 'Personal brand & DJ identity.' },
-  { id: '04', client: 'Estrela Photo', type: 'Portfolio', year: '2023', img: '/img/portfolios/estrela.jpg', desc: 'Photography studio portfolio.' },
-  { id: '05', client: 'Manuel KevSax', type: 'Web Design', year: '2024', img: '/img/portfolios/manusax.webp', desc: 'Luxury saxophonist booking platform.' },
-  { id: '06', client: 'Sergio Trumpet', type: 'Portfolio', year: '2024', img: '/img/portfolios/sergio.jpg', desc: 'Professional trumpet player.' },
-  { id: '07', client: 'Julio Cuba', type: 'Identity', year: '2024', img: '/img/portfolios/julio.webp', desc: 'Violinist performance portfolio.' },
+  { id: '01', name: 'Kiko Navarro', type: 'Web Design · 2024', img: '/img/portfolios/kikonavarro.jpg' },
+  { id: '02', name: 'Jessica Morari', type: 'Branding & Web · 2023', img: '/img/portfolios/jesslnk.webp' },
+  { id: '03', name: 'Javi Beat', type: 'Identity · 2024', img: '/img/portfolios/javibeat.jpg' },
+  { id: '04', name: 'Estrela Photo', type: 'Portfolio · 2023', img: '/img/portfolios/estrela.jpg' },
+  { id: '05', name: 'Manuel KevSax', type: 'Web Design · 2024', img: '/img/portfolios/manusax.webp' },
+  { id: '06', name: 'Sergio Trumpet', type: 'Portfolio · 2024', img: '/img/portfolios/sergio.jpg' },
+  { id: '07', name: 'Julio Cuba', type: 'Identity · 2024', img: '/img/portfolios/julio.webp' },
+]
+
+const graphic = [
+  { cat: 'Vinyl Cover', t: 'MAMA CALLING', s: 'Buika × Kiko Navarro' },
+  { cat: 'Vinyl Cover', t: 'EL SILENCIO', s: 'Buika × Kiko Navarro' },
+  { cat: 'Flyer Design', t: 'VARADERO', s: 'Event Series 2023' },
 ]
 
 export default function Home() {
-  const [hov, setHov] = useState<number | null>(null)
-  const [scrollY, setScrollY] = useState(0)
-  const [activeSection, setActiveSection] = useState('work')
+  const curRef = useRef<HTMLDivElement>(null)
+  const imgRef = useRef<HTMLDivElement>(null)
+  const imgEl = useRef<HTMLImageElement>(null)
+  const [activeImg, setActiveImg] = useState('')
 
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY)
-    window.addEventListener('scroll', onScroll, { passive: true })
+    let raf: number
+    let mx = -200, my = -200
 
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY
+      raf = requestAnimationFrame(() => {
+        if (curRef.current) {
+          curRef.current.style.left = mx + 'px'
+          curRef.current.style.top = my + 'px'
+        }
+        if (imgRef.current) {
+          imgRef.current.style.left = mx + 'px'
+          imgRef.current.style.top = my + 'px'
+        }
+      })
+    }
+    window.addEventListener('mousemove', onMove)
+
+    // Reveal observer
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id || 'work') })
-    }, { threshold: 0.3 })
-    document.querySelectorAll('section[id]').forEach(el => obs.observe(el))
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.querySelectorAll('.clip-inner').forEach(el => el.classList.add('in'))
+      })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.reveal-block').forEach(el => obs.observe(el))
 
-    return () => { window.removeEventListener('scroll', onScroll); obs.disconnect() }
+    return () => { window.removeEventListener('mousemove', onMove); cancelAnimationFrame(raf); obs.disconnect() }
   }, [])
 
-  const navItems = [
-    { label: 'Work', id: 'work' },
-    { label: 'Graphic', id: 'graphic' },
-    { label: 'App', id: 'app' },
-    { label: 'About', id: 'about' },
-    { label: 'Contact', id: 'contact' },
-  ]
+  useEffect(() => {
+    if (imgRef.current) {
+      if (activeImg) {
+        imgRef.current.classList.add('show')
+      } else {
+        imgRef.current.classList.remove('show')
+      }
+    }
+  }, [activeImg])
+
+  const F = (n: string) => 'var(--font-syne), Syne, system-ui, sans-serif'
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: S.cream, color: S.ink }}>
+    <>
+      {/* Cursor */}
+      <div id="cur" ref={curRef} />
 
-      {/* ── SIDEBAR ── */}
-      <aside style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0,
-        width: '72px',
-        borderRight: `1px solid rgba(10,10,10,0.1)`,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'space-between',
-        padding: '32px 0',
-        zIndex: 100,
-        background: S.cream,
+      {/* Image follower */}
+      <div id="img-follow" ref={imgRef}>
+        {activeImg && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img ref={imgEl} src={activeImg} alt="" />
+        )}
+      </div>
+
+      {/* ── NAV ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 48px', height: '56px',
+        borderBottom: '1px solid rgba(239,239,239,0.06)',
+        background: 'rgba(8,8,8,0.9)',
+        backdropFilter: 'blur(12px)',
       }}>
-        {/* Studio name — vertical */}
-        <a href="#" style={{ textDecoration: 'none' }}>
-          <div style={{
-            writingMode: 'vertical-rl',
-            textOrientation: 'mixed',
-            transform: 'rotate(180deg)',
-            fontFamily: 'var(--font-mono), monospace',
-            fontSize: '9px',
-            letterSpacing: '0.25em',
-            textTransform: 'uppercase',
-            color: S.ink,
-            lineHeight: 1,
-          }}>
-            True Love Creative
-          </div>
+        <a href="#" style={{ fontFamily: F(''), fontSize: '13px', fontWeight: 800, letterSpacing: '-.01em', color: '#EFEFEF', textDecoration: 'none' }}>
+          TLC<span style={{ color: '#FF3B00' }}>.</span>
         </a>
-
-        {/* Nav — vertical */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '28px', alignItems: 'center' }}>
-          {navItems.map(n => (
-            <a key={n.id} href={`#${n.id}`}
-              style={{
-                writingMode: 'vertical-rl',
-                textOrientation: 'mixed',
-                transform: 'rotate(180deg)',
-                fontFamily: 'var(--font-mono), monospace',
-                fontSize: '8px',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                textDecoration: 'none',
-                color: activeSection === n.id ? S.rust : 'rgba(10,10,10,0.3)',
-                transition: 'color 0.2s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
-              onMouseLeave={e => (e.currentTarget.style.color = activeSection === n.id ? S.rust : 'rgba(10,10,10,0.3)')}
-            >{n.label}</a>
+        <div style={{ display: 'flex', gap: '40px' }}>
+          {['Work', 'Graphic', 'App', 'About', 'Contact'].map(l => (
+            <a key={l} href={`#${l.toLowerCase()}`} style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(239,239,239,0.35)', textDecoration: 'none', transition: 'color .15s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#FF3B00')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,239,239,0.35)')}
+            >{l}</a>
           ))}
-        </nav>
+        </div>
+        <a href="mailto:info@truelovecreative.es" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.15em', textTransform: 'uppercase', color: '#FF3B00', textDecoration: 'none', border: '1px solid #FF3B00', padding: '8px 20px', transition: 'all .15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#FF3B00'; e.currentTarget.style.color = '#080808' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FF3B00' }}
+        >Let's Talk</a>
+      </nav>
 
-        {/* Bottom — year */}
+      {/* ── HERO ── */}
+      <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 48px 56px', paddingTop: '56px', position: 'relative', overflow: 'hidden' }}>
+
+        {/* Huge background number */}
         <div style={{
-          fontFamily: 'var(--font-mono), monospace',
-          fontSize: '8px',
-          color: 'rgba(10,10,10,0.2)',
-          letterSpacing: '0.15em',
-        }}>2026</div>
-      </aside>
+          position: 'absolute', bottom: '-8%', right: '-3%',
+          fontSize: 'clamp(200px, 35vw, 600px)', fontFamily: F(''), fontWeight: 800,
+          lineHeight: 1, color: 'rgba(239,239,239,0.025)', letterSpacing: '-.05em',
+          pointerEvents: 'none', userSelect: 'none',
+        }}>15</div>
 
-      {/* ── MAIN ── */}
-      <main style={{ marginLeft: '72px', flex: 1, overflow: 'hidden' }}>
+        {/* Tag */}
+        <div style={{ marginBottom: '32px' }}>
+          <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.35em', textTransform: 'uppercase', color: 'rgba(239,239,239,0.25)' }}>
+            Est. 2015 · Dubai, UAE · Web & Graphic Design Studio
+          </span>
+        </div>
 
-        {/* ── HERO ── */}
-        <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 60px 60px', position: 'relative', overflow: 'hidden' }}>
-
-          {/* Ghost letters behind */}
-          <div style={{
-            position: 'absolute',
-            top: '50%', left: '-2%',
-            transform: 'translateY(-50%)',
-            fontFamily: 'var(--font-serif), Georgia, serif',
-            fontSize: 'clamp(180px, 30vw, 400px)',
-            fontWeight: 700,
-            color: 'rgba(10,10,10,0.04)',
-            lineHeight: 1,
-            pointerEvents: 'none',
-            userSelect: 'none',
-            whiteSpace: 'nowrap',
-          }}>TLC</div>
-
-          {/* Top-right tag */}
-          <div style={{ position: 'absolute', top: '36px', right: '60px', textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase' }}>Est. 2015 · Dubai</div>
-          </div>
-
-          {/* Main type */}
-          <div>
-            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.35em', color: S.rust, textTransform: 'uppercase', marginBottom: '20px' }}>
-              — Web & Graphic Design Studio
-            </div>
-
-            <h1 style={{
-              fontFamily: 'var(--font-serif), Georgia, serif',
-              fontSize: 'clamp(5rem, 16vw, 18rem)',
-              fontWeight: 700,
-              lineHeight: 0.82,
-              letterSpacing: '-0.02em',
-            }}>
-              <span style={{ display: 'block' }}>TRUE</span>
-              <span style={{ display: 'block', color: S.rust, fontStyle: 'italic', fontWeight: 400 }}>LOVE</span>
-              <span style={{ display: 'block' }}>CREATIVE</span>
-            </h1>
-
-            <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: `1px solid rgba(10,10,10,0.12)`, paddingTop: '24px' }}>
-              <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(10,10,10,0.5)', maxWidth: '300px', lineHeight: 1.8 }}>
-                High-end digital experiences.<br />
-                Minimalist design, premium execution.<br />
-                <em>From Dubai to the world.</em>
-              </p>
-              <a href="#work" style={{
-                fontFamily: 'var(--font-mono), monospace',
-                fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase',
-                color: S.ink, textDecoration: 'none',
-                display: 'flex', alignItems: 'center', gap: '12px',
-              }}
-                onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
-                onMouseLeave={e => (e.currentTarget.style.color = S.ink)}
-              >
-                Selected Works <span style={{ fontSize: '20px' }}>↓</span>
-              </a>
+        {/* Main headline */}
+        <div className="reveal-block">
+          <div className="clip-wrap" style={{ marginBottom: '-8px' }}>
+            <div className="clip-inner" style={{ fontFamily: F(''), fontSize: 'clamp(5rem, 15vw, 20rem)', fontWeight: 800, lineHeight: .85, letterSpacing: '-.04em', color: '#EFEFEF' }}>
+              TRUE
             </div>
           </div>
-        </section>
-
-        {/* ── WORK ── */}
-        <section id="work">
-          {/* Section header */}
-          <div style={{ padding: '80px 60px 0', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
-            <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 7rem)', fontWeight: 700, lineHeight: 1 }}>
-              Selected<br /><em style={{ color: S.rust, fontWeight: 400 }}>Works<span style={{ color: S.ink }}>.</span></em>
-            </div>
-            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(10,10,10,0.2)', letterSpacing: '0.2em' }}>07 projects</div>
-          </div>
-
-          {/* Project list */}
-          <div style={{ marginTop: '48px' }}>
-            {projects.map((p, i) => (
-              <div key={p.id}
-                onMouseEnter={() => setHov(i)}
-                onMouseLeave={() => setHov(null)}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '60px 1fr auto',
-                  alignItems: 'center',
-                  gap: '32px',
-                  padding: '24px 60px',
-                  borderTop: `1px solid rgba(10,10,10,${hov === i ? '0' : '0.08'})`,
-                  background: hov === i ? S.ink : 'transparent',
-                  transition: 'background 0.2s ease',
-                  cursor: 'crosshair',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                {/* Number */}
-                <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', color: hov === i ? 'rgba(240,234,224,0.2)' : 'rgba(10,10,10,0.2)', letterSpacing: '0.1em' }}>{p.id}</span>
-
-                {/* Client + type */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                  {/* Thumbnail — appears on hover */}
-                  <div style={{
-                    width: hov === i ? '72px' : '0px',
-                    height: '52px',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    transition: 'width 0.3s ease',
-                    position: 'relative',
-                  }}>
-                    <Image src={p.img} alt={p.client} fill style={{ objectFit: 'cover' }} />
-                  </div>
-                  <div>
-                    <div style={{
-                      fontFamily: 'var(--font-serif), Georgia, serif',
-                      fontSize: 'clamp(1.4rem, 3vw, 3rem)',
-                      fontWeight: 600,
-                      color: hov === i ? S.cream : S.ink,
-                      lineHeight: 1.1,
-                      transition: 'color 0.2s',
-                    }}>{p.client}</div>
-                    <div style={{
-                      fontFamily: 'var(--font-mono), monospace',
-                      fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase',
-                      color: hov === i ? 'rgba(240,234,224,0.35)' : 'rgba(10,10,10,0.3)',
-                      marginTop: '4px',
-                      transition: 'color 0.2s',
-                    }}>{p.type} · {p.year}</div>
-                  </div>
-                </div>
-
-                {/* Arrow */}
-                <span style={{
-                  fontFamily: 'var(--font-sans), system-ui, sans-serif',
-                  fontSize: '20px',
-                  color: hov === i ? S.rust : 'rgba(10,10,10,0.15)',
-                  transform: hov === i ? 'translateX(4px)' : 'none',
-                  transition: 'all 0.2s ease',
-                }}>→</span>
-              </div>
-            ))}
-            <div style={{ height: '1px', background: 'rgba(10,10,10,0.08)', margin: '0 60px' }} />
-          </div>
-        </section>
-
-        {/* ── STATEMENT ── */}
-        <section style={{ padding: '120px 60px', background: S.ink, overflow: 'hidden' }}>
-          <div style={{
-            fontFamily: 'var(--font-serif), Georgia, serif',
-            fontSize: 'clamp(3rem, 8vw, 10rem)',
-            fontWeight: 700,
-            lineHeight: 0.88,
-            color: S.cream,
-          }}>
-            <div>We craft</div>
-            <div style={{ color: S.rust, fontStyle: 'italic', fontWeight: 400 }}>high-impact</div>
-            <div>digital</div>
-            <div>experiences<span style={{ color: S.rust }}>.</span></div>
-          </div>
-          <div style={{ marginTop: '64px', display: 'flex', justifyContent: 'flex-end' }}>
-            <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(240,234,224,0.45)', maxWidth: '320px', lineHeight: 1.9 }}>
-              Every pixel has a purpose. Every decision is intentional. We don't make pretty things — we make things that work beautifully.
-            </p>
-          </div>
-        </section>
-
-        {/* ── GRAPHIC DESIGN ── */}
-        <section id="graphic" style={{ padding: '120px 60px', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
-          <div style={{ marginBottom: '64px' }}>
-            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase', marginBottom: '12px' }}>Graphic Design</div>
-            <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 7rem)', fontWeight: 700, lineHeight: 1 }}>
-              Print &<br /><em style={{ color: S.rust, fontWeight: 400 }}>Identity</em>
+          <div className="clip-wrap" style={{ marginBottom: '-8px' }}>
+            <div className="clip-inner" style={{ transitionDelay: '.08s', fontFamily: F(''), fontSize: 'clamp(5rem, 15vw, 20rem)', fontWeight: 800, lineHeight: .85, letterSpacing: '-.04em', color: '#FF3B00' }}>
+              LOVE
             </div>
           </div>
-
-          {/* Large featured items */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2px', background: 'rgba(10,10,10,0.06)' }}>
-            {[
-              { title: 'MAMA CALLING', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
-              { title: 'EL SILENCIO', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
-              { title: 'VARADERO', sub: 'Event Series · 2023', type: 'Flyer Design' },
-            ].map((g, i) => (
-              <div key={g.title}
-                style={{
-                  background: i === 0 ? S.ink : S.mist,
-                  padding: i === 0 ? '64px' : '48px',
-                  gridColumn: i === 0 ? '1 / 2' : 'auto',
-                  transition: 'background 0.3s',
-                  cursor: 'crosshair',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? '#1a1a1a' : S.ink)}
-                onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? S.ink : S.mist)}
-              >
-                <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase', color: i === 0 ? 'rgba(240,234,224,0.3)' : 'rgba(10,10,10,0.3)', marginBottom: '32px' }}>{g.type}</div>
-                <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: i === 0 ? 'clamp(2.5rem, 5vw, 6rem)' : 'clamp(1.8rem, 3vw, 3.5rem)', fontWeight: 700, lineHeight: 0.9, color: i === 0 ? S.cream : S.ink, marginBottom: '16px' }}>{g.title}</div>
-                <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', color: i === 0 ? 'rgba(240,234,224,0.4)' : 'rgba(10,10,10,0.4)', letterSpacing: '0.1em' }}>{g.sub}</div>
-              </div>
-            ))}
+          <div className="clip-wrap">
+            <div className="clip-inner" style={{ transitionDelay: '.16s', fontFamily: F(''), fontSize: 'clamp(5rem, 15vw, 20rem)', fontWeight: 800, lineHeight: .85, letterSpacing: '-.04em', color: '#EFEFEF' }}>
+              CREATIVE
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* ── NIBANGO ── */}
-        <section id="app" style={{ background: S.ink, color: S.cream, padding: '120px 60px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.3em', color: 'rgba(240,234,224,0.2)', textTransform: 'uppercase', marginBottom: '24px' }}>App Development</div>
-              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.2em', color: S.rust, textTransform: 'uppercase', marginBottom: '20px' }}>Live · iOS · Android · Web</div>
-              <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(5rem, 10vw, 12rem)', fontWeight: 700, lineHeight: 0.88, color: S.cream, marginBottom: '32px' }}>
-                nib<em style={{ color: S.rust }}>an</em>go<span style={{ color: S.rust }}>.</span>
-              </h2>
-              <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(240,234,224,0.45)', lineHeight: 1.9, maxWidth: '340px', marginBottom: '48px' }}>
-                The marketplace that actually works. Buy. Sell. Bid. Donate. 6 sections, 4 pricing models, real-time chat, zero commissions.
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', borderTop: '1px solid rgba(240,234,224,0.08)', paddingTop: '32px' }}>
-                {[['6','Categories'],['4','Pricing'],['3','Platforms'],['0%','Commission']].map(([n,l]) => (
-                  <div key={l}>
-                    <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '2.5rem', fontWeight: 700, color: S.cream, lineHeight: 1 }}>{n}</div>
-                    <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', color: 'rgba(240,234,224,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '8px', lineHeight: 1.4 }}>{l}</div>
-                  </div>
-                ))}
+        <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(239,239,239,0.08)', paddingTop: '28px' }}>
+          <p style={{ fontFamily: F(''), fontSize: '14px', fontWeight: 400, color: 'rgba(239,239,239,0.4)', maxWidth: '280px', lineHeight: 1.8 }}>
+            High-end digital experiences.<br />Minimalist design, premium execution.<br />From Dubai to the world.
+          </p>
+          <a href="#work" style={{ fontFamily: F(''), fontSize: '11px', fontWeight: 700, letterSpacing: '.25em', textTransform: 'uppercase', color: 'rgba(239,239,239,0.3)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '12px', transition: 'color .2s' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#FF3B00')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,239,239,0.3)')}
+          >
+            Selected Works <span style={{ fontSize: '22px' }}>↓</span>
+          </a>
+        </div>
+      </section>
+
+      {/* ── TICKER ── */}
+      <div style={{ borderTop: '1px solid rgba(239,239,239,0.06)', borderBottom: '1px solid rgba(239,239,239,0.06)', padding: '14px 0', overflow: 'hidden' }}>
+        <div className="run">
+          {Array(4).fill(['KIKO NAVARRO', '✦', 'JESSICA MORARI', '✦', 'JAVI BEAT', '✦', 'ESTRELA PHOTO', '✦', 'MANUEL KEVSAX', '✦', 'JULIO CUBA', '✦', 'NIBANGO', '✦']).flat().map((t, i) => (
+            <span key={i} style={{ fontFamily: F(''), fontSize: '10px', fontWeight: 700, letterSpacing: '.3em', textTransform: 'uppercase', padding: '0 24px', color: i % 2 === 1 ? '#FF3B00' : 'rgba(239,239,239,0.2)' }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── WORK ── */}
+      <section id="work" style={{ padding: '96px 0 0' }}>
+        <div style={{ padding: '0 48px', marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div className="reveal-block">
+            <div className="clip-wrap">
+              <div className="clip-inner" style={{ fontFamily: F(''), fontSize: 'clamp(2.5rem, 6vw, 7rem)', fontWeight: 800, letterSpacing: '-.03em', lineHeight: 1 }}>
+                SELECTED<br /><span style={{ color: '#FF3B00' }}>WORKS</span>
               </div>
             </div>
-            <div style={{ position: 'relative', height: '480px' }}>
-              <Image src="/img/portfolios/nibango-mockup-2.png" alt="Nibango" fill style={{ objectFit: 'contain' }} />
-            </div>
           </div>
-        </section>
+          <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.2em', color: 'rgba(239,239,239,0.15)', textTransform: 'uppercase' }}>07 projects</span>
+        </div>
 
-        {/* ── HOME AGENT ── */}
-        <section style={{ padding: '120px 60px', background: S.mist, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
-          <div>
-            <div style={{ display: 'inline-block', background: S.rust, padding: '6px 16px', marginBottom: '32px' }}>
-              <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase', color: S.cream }}>★ Available for Acquisition</span>
-            </div>
-            <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 8rem)', fontWeight: 700, lineHeight: 0.88, marginBottom: '32px' }}>
-              Home<br />Agent<span style={{ color: S.rust }}>.</span>
-            </h2>
-            <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(10,10,10,0.55)', lineHeight: 1.9, maxWidth: '360px', marginBottom: '40px' }}>
-              A fully-designed real estate portfolio platform. Listings, proforma calculator, lead capture — built and ready. No development needed.
-            </p>
-            {['Responsive & mobile-first','Proforma calculator included','Lead capture forms','White-label ready'].map(f => (
-              <div key={f} style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(10,10,10,0.45)', letterSpacing: '0.1em', marginBottom: '10px', display: 'flex', gap: '12px' }}>
-                <span style={{ color: S.rust }}>—</span>{f}
+        <div style={{ borderTop: '1px solid rgba(239,239,239,0.07)' }}>
+          {projects.map((p, i) => (
+            <div key={p.id} className="wi"
+              onMouseEnter={() => setActiveImg(p.img)}
+              onMouseLeave={() => setActiveImg('')}
+            >
+              <span className="wi-num">{p.id}</span>
+              <div>
+                <div className="wi-name">{p.name}</div>
+                <div className="wi-type">{p.type}</div>
               </div>
-            ))}
-            <a href="mailto:info@truelovecreative.es?subject=Home Agent"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginTop: '40px', fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: `1px solid ${S.ink}`, padding: '16px 28px', textDecoration: 'none', color: S.ink, transition: 'background 0.2s, color 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = S.ink; e.currentTarget.style.color = S.cream }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = S.ink }}
-            >Acquire this project →</a>
-          </div>
-          <div style={{ position: 'relative', height: '440px' }}>
-            <Image src="/img/portfolios/homeagent.png" alt="Home Agent" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
-          </div>
-        </section>
-
-        {/* ── ABOUT ── */}
-        <section id="about" style={{ padding: '120px 60px', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '120px' }}>
-            <div>
-              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase', marginBottom: '32px' }}>About the Studio</div>
-              <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(2.5rem, 5vw, 6rem)', fontWeight: 700, lineHeight: 0.9, marginBottom: '48px' }}>
-                Design with<br /><em style={{ color: S.rust, fontWeight: 400 }}>conviction.</em>
-              </h2>
-              <div style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '14px', color: 'rgba(10,10,10,0.6)', lineHeight: 1.9 }}>
-                <p style={{ marginBottom: '20px' }}>True Love Creative is a web and graphic design studio founded in 2015. We work with brands that care about how they look and how they make people feel.</p>
-                <p style={{ marginBottom: '20px' }}>Based in Dubai — working globally. Artists, startups, clinics, agencies. We've helped all of them build digital presences that people remember.</p>
-                <p style={{ fontStyle: 'italic', color: S.ink }}>We don't do average. We do work we're proud to sign.</p>
-              </div>
+              <span className="wi-arr">→</span>
             </div>
-            <div style={{ paddingTop: '80px' }}>
-              {[['Founded','2015'],['Base','Dubai, UAE'],['Speciality','Web · Graphic · App'],['Languages','ES · EN · AR'],['Email','info@truelovecreative.es'],['Phone','+971 58 532 4519']].map(([l,v], i) => (
-                <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 0', borderBottom: `1px solid rgba(10,10,10,0.08)` }}>
-                  <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(10,10,10,0.3)' }}>{l}</span>
-                  <span style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '1.1rem', fontWeight: 600, textAlign: 'right' }}>{v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          ))}
+          <div style={{ height: '1px', background: 'rgba(239,239,239,0.07)', margin: '0 48px' }} />
+        </div>
+      </section>
 
-        {/* ── CONTACT ── */}
-        <section id="contact" style={{ background: S.ink, color: S.cream, padding: '120px 60px', borderTop: `1px solid rgba(240,234,224,0.06)` }}>
-          <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(240,234,224,0.2)', textTransform: 'uppercase', marginBottom: '64px' }}>
-            Start a Project
+      {/* ── STATEMENT ── */}
+      <section style={{ padding: '120px 48px', overflow: 'hidden' }}>
+        <div className="reveal-block">
+          {['We make', 'things that', 'work', 'beautifully.'].map((line, i) => (
+            <div key={line} className="clip-wrap" style={{ overflow: 'hidden' }}>
+              <div className="clip-inner" style={{
+                transitionDelay: `${i * .1}s`,
+                fontFamily: F(''), fontWeight: 800,
+                fontSize: 'clamp(3rem, 9vw, 11rem)',
+                lineHeight: .88, letterSpacing: '-.04em',
+                color: i === 2 ? '#FF3B00' : '#EFEFEF',
+              }}>{line}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '64px', display: 'flex', justifyContent: 'flex-end' }}>
+          <p style={{ fontFamily: F(''), fontSize: '13px', fontWeight: 400, color: 'rgba(239,239,239,0.35)', maxWidth: '300px', lineHeight: 1.9 }}>
+            Every pixel has a purpose. Every decision is intentional. We don't make pretty things — we make things that work beautifully.
+          </p>
+        </div>
+      </section>
+
+      {/* ── GRAPHIC ── */}
+      <section id="graphic" style={{ padding: '0 48px 96px' }}>
+        <div style={{ marginBottom: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div style={{ fontFamily: F(''), fontSize: 'clamp(2.5rem, 6vw, 7rem)', fontWeight: 800, letterSpacing: '-.03em', lineHeight: 1 }}>
+            GRAPHIC<br /><span style={{ color: '#FF3B00' }}>DESIGN</span>
           </div>
-          <h2 style={{
-            fontFamily: 'var(--font-serif), Georgia, serif',
-            fontSize: 'clamp(4rem, 13vw, 15rem)',
-            fontWeight: 700,
-            lineHeight: 0.83,
-            color: S.cream,
-            marginBottom: '80px',
-            letterSpacing: '-0.02em',
-          }}>
-            Let's<br />make<br /><em style={{ color: S.rust, fontWeight: 400 }}>something</em><br />great<span style={{ color: S.rust }}>.</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'rgba(239,239,239,0.06)' }}>
+          {graphic.map(g => (
+            <div key={g.t} className="gc">
+              <div className="gc-cat">{g.cat}</div>
+              <div className="gc-t">{g.t}</div>
+              <div className="gc-s">{g.s}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── APP ── */}
+      <section id="app" style={{ padding: '96px 48px', borderTop: '1px solid rgba(239,239,239,0.06)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+        <div>
+          <div style={{ fontFamily: F(''), fontSize: '9px', fontWeight: 700, letterSpacing: '.35em', textTransform: 'uppercase', color: '#FF3B00', marginBottom: '24px' }}>App Development · Live on iOS · Android · Web</div>
+          <h2 style={{ fontFamily: F(''), fontSize: 'clamp(5rem, 10vw, 13rem)', fontWeight: 800, letterSpacing: '-.04em', lineHeight: .85, color: '#EFEFEF', marginBottom: '32px' }}>
+            NIB<span style={{ color: '#FF3B00' }}>AN</span>GO
           </h2>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(240,234,224,0.08)', paddingTop: '48px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <a href="mailto:info@truelovecreative.es"
-                style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '14px', color: 'rgba(240,234,224,0.6)', textDecoration: 'none', letterSpacing: '0.05em', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,234,224,0.6)')}
-              >info@truelovecreative.es ↗</a>
-              <a href="tel:+971585324519"
-                style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '12px', color: 'rgba(240,234,224,0.3)', textDecoration: 'none' }}>
-                +971 58 532 4519
-              </a>
-            </div>
-            <a href="mailto:info@truelovecreative.es"
-              style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: '1px solid rgba(240,234,224,0.2)', padding: '18px 36px', textDecoration: 'none', color: S.cream, transition: 'all 0.2s', flexShrink: 0 }}
-              onMouseEnter={e => { e.currentTarget.style.background = S.cream; e.currentTarget.style.color = S.ink }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = S.cream }}
-            >Start a project →</a>
+          <p style={{ fontFamily: F(''), fontSize: '14px', fontWeight: 400, color: 'rgba(239,239,239,0.4)', lineHeight: 1.9, maxWidth: '360px', marginBottom: '48px' }}>
+            The marketplace that actually works. Buy. Sell. Bid. Donate. 6 sections, 4 pricing models, real-time chat, zero commissions.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', borderTop: '1px solid rgba(239,239,239,0.08)', paddingTop: '32px' }}>
+            {[['6','Categories'],['4','Pricing'],['3','Platforms'],['0%','Commission']].map(([n,l]) => (
+              <div key={l}>
+                <div style={{ fontFamily: F(''), fontSize: '2.8rem', fontWeight: 800, color: '#EFEFEF', lineHeight: 1 }}>{n}</div>
+                <div style={{ fontFamily: F(''), fontSize: '8px', fontWeight: 600, color: 'rgba(239,239,239,0.2)', textTransform: 'uppercase', letterSpacing: '.15em', marginTop: '8px' }}>{l}</div>
+              </div>
+            ))}
           </div>
-        </section>
+        </div>
+        <div style={{ position: 'relative', height: '480px' }}>
+          <Image src="/img/portfolios/nibango-mockup-2.png" alt="Nibango" fill style={{ objectFit: 'contain' }} />
+        </div>
+      </section>
 
-        {/* ── FOOTER ── */}
-        <footer style={{ background: S.ink, borderTop: '1px solid rgba(240,234,224,0.06)', padding: '24px 60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '13px', color: 'rgba(240,234,224,0.4)', fontWeight: 600 }}>True Love Creative</span>
-          <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(240,234,224,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>© 2015–2026</span>
-          <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(240,234,224,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Dubai, UAE</span>
-        </footer>
+      {/* ── HOME AGENT ── */}
+      <section style={{ padding: '96px 48px', borderTop: '1px solid rgba(239,239,239,0.06)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center', background: 'rgba(239,239,239,0.02)' }}>
+        <div>
+          <div style={{ display: 'inline-block', background: '#FF3B00', padding: '6px 16px', marginBottom: '32px' }}>
+            <span style={{ fontFamily: F(''), fontSize: '9px', fontWeight: 700, letterSpacing: '.3em', textTransform: 'uppercase', color: '#080808' }}>★ Available for Acquisition</span>
+          </div>
+          <h2 style={{ fontFamily: F(''), fontSize: 'clamp(3rem, 6vw, 8rem)', fontWeight: 800, letterSpacing: '-.04em', lineHeight: .85, marginBottom: '32px' }}>
+            HOME<br /><span style={{ color: '#FF3B00' }}>AGENT</span>
+          </h2>
+          <p style={{ fontFamily: F(''), fontSize: '14px', fontWeight: 400, color: 'rgba(239,239,239,0.4)', lineHeight: 1.9, maxWidth: '360px', marginBottom: '40px' }}>
+            A fully-designed real estate portfolio platform. Listings, proforma calculator, lead capture — built and ready.
+          </p>
+          <a href="mailto:info@truelovecreative.es?subject=Home Agent"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', fontFamily: F(''), fontSize: '11px', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', border: '1px solid rgba(239,239,239,0.2)', padding: '16px 28px', textDecoration: 'none', color: '#EFEFEF', transition: 'all .15s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#FF3B00'; e.currentTarget.style.color = '#080808'; e.currentTarget.style.borderColor = '#FF3B00' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#EFEFEF'; e.currentTarget.style.borderColor = 'rgba(239,239,239,0.2)' }}
+          >Acquire this project →</a>
+        </div>
+        <div style={{ position: 'relative', height: '400px' }}>
+          <Image src="/img/portfolios/homeagent.png" alt="Home Agent" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
+        </div>
+      </section>
 
-      </main>
-    </div>
+      {/* ── ABOUT ── */}
+      <section id="about" style={{ padding: '96px 48px', borderTop: '1px solid rgba(239,239,239,0.06)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '120px' }}>
+          <div>
+            <h2 style={{ fontFamily: F(''), fontSize: 'clamp(3rem, 6vw, 8rem)', fontWeight: 800, letterSpacing: '-.04em', lineHeight: .85, marginBottom: '48px' }}>
+              DESIGN<br />WITH<br /><span style={{ color: '#FF3B00' }}>GUTS.</span>
+            </h2>
+            <div style={{ fontFamily: F(''), fontSize: '14px', fontWeight: 400, color: 'rgba(239,239,239,0.45)', lineHeight: 1.9 }}>
+              <p style={{ marginBottom: '20px' }}>True Love Creative is a web and graphic design studio founded in 2015. We work with brands that care about how they look and how they make people feel.</p>
+              <p style={{ marginBottom: '20px' }}>Based in Dubai — working globally. Artists, startups, clinics, agencies. We've helped all of them build digital presences that people remember.</p>
+              <p style={{ color: '#EFEFEF', fontWeight: 600 }}>We don't do average. We do work we're proud to sign.</p>
+            </div>
+          </div>
+          <div style={{ paddingTop: '64px' }}>
+            {[['Founded','2015'],['Base','Dubai, UAE'],['Services','Web · Graphic · App'],['Languages','ES · EN · AR'],['Email','info@truelovecreative.es'],['Phone','+971 58 532 4519']].map(([l,v]) => (
+              <div key={l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '18px 0', borderBottom: '1px solid rgba(239,239,239,0.06)' }}>
+                <span style={{ fontFamily: F(''), fontSize: '9px', fontWeight: 600, letterSpacing: '.25em', textTransform: 'uppercase', color: 'rgba(239,239,239,0.25)' }}>{l}</span>
+                <span style={{ fontFamily: F(''), fontSize: '14px', fontWeight: 700, textAlign: 'right' }}>{v}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CONTACT ── */}
+      <section id="contact" style={{ padding: '120px 48px', borderTop: '1px solid rgba(239,239,239,0.06)' }}>
+        <h2 style={{ fontFamily: F(''), fontSize: 'clamp(4rem, 14vw, 18rem)', fontWeight: 800, letterSpacing: '-.04em', lineHeight: .82, marginBottom: '80px' }}>
+          LET'S<br />MAKE<br /><span style={{ color: '#FF3B00' }}>GREAT</span><br />THINGS.
+        </h2>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(239,239,239,0.08)', paddingTop: '48px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <a href="mailto:info@truelovecreative.es" style={{ fontFamily: F(''), fontSize: '15px', fontWeight: 600, color: 'rgba(239,239,239,0.5)', textDecoration: 'none', transition: 'color .2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#FF3B00')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(239,239,239,0.5)')}
+            >info@truelovecreative.es ↗</a>
+            <span style={{ fontFamily: F(''), fontSize: '12px', fontWeight: 500, color: 'rgba(239,239,239,0.25)' }}>+971 58 532 4519 · Dubai, UAE</span>
+          </div>
+          <a href="mailto:info@truelovecreative.es"
+            style={{ fontFamily: F(''), fontSize: '11px', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', background: '#FF3B00', padding: '18px 36px', textDecoration: 'none', color: '#080808', transition: 'all .15s', flexShrink: 0 }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#EFEFEF' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FF3B00' }}
+          >Start a project →</a>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: '1px solid rgba(239,239,239,0.06)', padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: F(''), fontSize: '12px', fontWeight: 800, letterSpacing: '-.01em' }}>TLC<span style={{ color: '#FF3B00' }}>.</span></span>
+        <span style={{ fontFamily: F(''), fontSize: '9px', fontWeight: 600, color: 'rgba(239,239,239,0.2)', letterSpacing: '.2em', textTransform: 'uppercase' }}>© 2015–2026 True Love Creative</span>
+        <span style={{ fontFamily: F(''), fontSize: '9px', fontWeight: 600, color: 'rgba(239,239,239,0.2)', letterSpacing: '.2em', textTransform: 'uppercase' }}>Dubai, UAE</span>
+      </footer>
+    </>
   )
 }
