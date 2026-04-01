@@ -15,7 +15,12 @@ const config: Config = {
         sand: "#D9C9B0",
         mist: "#E8E2D9",
       },
-      divideOpacity: { 8: '0.08' },
+      fontFamily: {
+        serif: ["var(--font-serif)", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
+      },
+      backgroundImage: {},
     },
   },
   plugins: [],

@@ -2,31 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --cream: #F2EDE4;
-  --ink: #111111;
-  --rust: #B8390E;
-  --sand: #D9C9B0;
-  --mist: #E8E2D9;
-}
 
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--cream);
-  color: var(--ink);
-  font-family: 'Space Grotesk', sans-serif;
+  background: #F2EDE4;
+  color: #111111;
   overflow-x: hidden;
   cursor: crosshair;
 }
 
-::selection { background: var(--rust); color: var(--cream); }
+::selection { background: #B8390E; color: #F2EDE4; }
 
-/* Grain */
 body::after {
   content: '';
   position: fixed;
@@ -37,28 +25,15 @@ body::after {
   z-index: 9998;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 2px; }
-::-webkit-scrollbar-track { background: var(--cream); }
-::-webkit-scrollbar-thumb { background: var(--rust); }
+::-webkit-scrollbar-track { background: #F2EDE4; }
+::-webkit-scrollbar-thumb { background: #B8390E; }
 
-/* Type */
-.font-serif { font-family: 'Cormorant Garamond', Georgia, serif; }
-.font-mono { font-family: 'Space Mono', monospace; }
-
-/* Marquee */
 @keyframes slide {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 .ticker { animation: slide 22s linear infinite; display: flex; white-space: nowrap; }
 
-/* Blink */
 @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0 } }
 .blink { animation: blink 1.2s step-end infinite; }
-
-/* Line reveal */
-.line-reveal {
-  overflow: hidden;
-  display: block;
-}
