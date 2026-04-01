@@ -111,11 +111,10 @@ function NibangoCarousel() {
 
   return (
     <div>
-      <div className="hp-photo" style={{ position:'relative', aspectRatio:'9/16', background:'#0a0a0a' }}>
+      <div className="hp-photo" style={{ position:'relative', aspectRatio:'9/16', background:PAPER, overflow:'hidden' }}>
         {nibangoSlides.map((src, i) => (
-          <img key={src} src={src} alt="Nibango" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'contain', transition:'opacity .6s ease', opacity: i === current ? 1 : 0 }} />
+          <img key={src} src={src} alt="Nibango" style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', transition:'opacity .6s ease', opacity: i === current ? 1 : 0 }} />
         ))}
-        {/* scanlines + streak inherited from .hp-photo */}
       </div>
       {/* Dots */}
       <div style={{ display:'flex', justifyContent:'center', gap:'8px', marginTop:'10px' }}>
@@ -266,35 +265,54 @@ export default function Home() {
 
         {/* ══ SELECTED WORKS ════════════════════════════════════ */}
         <section id="selected" style={{ padding:'32px 0' }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:'8px' }}>
-            <h2 className="playfair" style={{ fontFamily:P, fontSize:'clamp(2rem,5vw,4rem)', fontWeight:900, letterSpacing:'-.02em', lineHeight:1 }}>
-              Selected <em style={{ color:RED }}>Works</em>
-            </h2>
-            <span style={{ fontFamily:E, fontSize:'9px', color:FADE, letterSpacing:'.15em' }}>Anno Domini MMXXIV</span>
+          {/* Header + intro — 2 col magazine layout */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'32px', marginBottom:'24px', alignItems:'end' }} className="grid-2">
+            <div>
+              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.3em', textTransform:'uppercase', color:FADE, marginBottom:'8px' }}>Section II</div>
+              <h2 className="playfair" style={{ fontFamily:P, fontSize:'clamp(2rem,5vw,4.5rem)', fontWeight:900, letterSpacing:'-.02em', lineHeight:.9 }}>
+                Selected<br /><em style={{ color:RED }}>Works</em>
+              </h2>
+            </div>
+            <div>
+              <p className="fell" style={{ fontFamily:F, fontSize:'13px', lineHeight:1.9, color:FADE, borderLeft:`2px solid ${RED}`, paddingLeft:'14px' }}>
+                Seven projects. Seven stories. Each one built with the same conviction — that good design is the difference between being remembered and being ignored.
+              </p>
+              <div style={{ marginTop:'12px', fontFamily:E, fontSize:'8px', letterSpacing:'.2em', color:FADE, textTransform:'uppercase' }}>MMXXIII — MMXXIV</div>
+            </div>
           </div>
           <div className="rule-h" style={{ marginBottom:'0' }} />
 
-          {projects.map(p=>(
-            <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', display:'block' }} className="work-row">
-              <span className="wr-num">{p.id}</span>
-              <div>
-                <div className="wr-name">{p.name}</div>
-                <div className="wr-type">{p.type}</div>
+          {/* Works list with image peek on left */}
+          {projects.map((p, i) => (
+            <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', display:'grid', gridTemplateColumns:'36px auto 1fr auto', gap:'16px', alignItems:'center', padding:'14px 0', borderBottom:`1px solid ${RULE}`, transition:'padding-left .2s', cursor:'crosshair' }}
+              className="work-row"
+              onMouseEnter={e=>(e.currentTarget.style.background='rgba(139,26,26,0.03)')}
+              onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
+            >
+              <span style={{ fontFamily:E, fontSize:'9px', color:FADE, letterSpacing:'.1em' }}>{p.id}</span>
+              {/* small thumb */}
+              <div style={{ width:'48px', height:'36px', position:'relative', overflow:'hidden', flexShrink:0, opacity:.7 }}>
+                <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover', filter:'grayscale(40%)' }} />
               </div>
-              <span className="wr-arr">↗</span>
+              <div>
+                <div className="wr-name" style={{ fontFamily:P, fontSize:'clamp(1.1rem,2.5vw,2rem)', fontWeight:700, color:INK }}>{p.name}</div>
+                <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.2em', textTransform:'uppercase', color:FADE, marginTop:'2px' }}>{p.type}</div>
+              </div>
+              <span style={{ fontSize:'14px', color:FADE, transition:'all .15s' }} className="wr-arr">↗</span>
             </a>
           ))}
 
-          {/* Photo grid */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'2px', marginTop:'24px' }} className="grid-3">
-            {[projects[3],projects[4],projects[5]].map(p=>(
-              <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', color:'inherit' }}>
-                <div className="hp-photo" style={{ position:'relative', aspectRatio:'4/3' }}>
+          {/* Photo strip — full bleed 4 col */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', marginTop:'28px' }}>
+            {projects.slice(0,4).map(p=>(
+              <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', color:'inherit', display:'block' }}>
+                <div className="hp-photo" style={{ position:'relative', aspectRatio:'3/4' }}>
                   <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover' }} />
-                </div>
-                <div style={{ padding:'8px 0' }}>
-                  <div style={{ fontFamily:P, fontSize:'14px', fontWeight:700, color:INK }}>{p.name}</div>
-                  <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.15em', textTransform:'uppercase', color:FADE }}>{p.type}</div>
+                  {/* name overlay */}
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'10px 8px', background:'linear-gradient(transparent,rgba(26,18,8,0.75))', zIndex:4 }}>
+                    <div style={{ fontFamily:P, fontSize:'13px', fontWeight:700, color:PAPER, lineHeight:1.2 }}>{p.name}</div>
+                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.15em', textTransform:'uppercase', color:'rgba(244,239,224,0.55)', marginTop:'2px' }}>{p.type}</div>
+                  </div>
                 </div>
               </a>
             ))}
@@ -389,11 +407,18 @@ export default function Home() {
                 <p className="fell" style={{ fontFamily:F, fontSize:'14px', lineHeight:1.85, color:INK, maxWidth:'440px' }}>
                   A fully-designed real estate portfolio platform — listings, proforma calculator, lead capture. Built, tested, and ready for acquisition. No development required.
                 </p>
-                <a href="mailto:info@truelovecreative.es?subject=Home Agent"
-                  style={{ display:'inline-block', marginTop:'20px', fontFamily:E, fontSize:'10px', letterSpacing:'.25em', textTransform:'uppercase', background:INK, color:PAPER, padding:'12px 24px', textDecoration:'none', transition:'background .15s' }}
-                  onMouseEnter={e=>(e.currentTarget.style.background=RED)} onMouseLeave={e=>(e.currentTarget.style.background=INK)}>
-                  Acquire Now →
-                </a>
+                <div style={{ display:'flex', gap:'12px', flexWrap:'wrap', marginTop:'20px' }}>
+                  <a href="https://home-agent-eight.vercel.app" target="_blank" rel="noopener noreferrer"
+                    style={{ display:'inline-block', fontFamily:E, fontSize:'10px', letterSpacing:'.25em', textTransform:'uppercase', background:INK, color:PAPER, padding:'12px 24px', textDecoration:'none', transition:'background .15s' }}
+                    onMouseEnter={e=>(e.currentTarget.style.background=RED)} onMouseLeave={e=>(e.currentTarget.style.background=INK)}>
+                    View Demo →
+                  </a>
+                  <a href="mailto:info@truelovecreative.es?subject=Home Agent"
+                    style={{ display:'inline-block', fontFamily:E, fontSize:'10px', letterSpacing:'.25em', textTransform:'uppercase', border:`1px solid ${INK}`, color:INK, padding:'12px 24px', textDecoration:'none', transition:'all .15s' }}
+                    onMouseEnter={e=>{e.currentTarget.style.background=INK;e.currentTarget.style.color=PAPER}} onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=INK}}>
+                    Acquire →
+                  </a>
+                </div>
               </div>
               <div style={{ position:'relative', width:'min(100%,320px)', aspectRatio:'4/3', flexShrink:0 }}>
                 <Image src="/img/portfolios/homeagent.png" alt="Home Agent" fill style={{ objectFit:'contain' }} />
