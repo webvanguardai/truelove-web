@@ -188,7 +188,7 @@ export default function Home() {
             <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.3em', textTransform:'uppercase', color:FADE, marginBottom:'8px' }}>Studio</div>
             <div className="rule-thin" style={{ marginBottom:'12px' }} />
             <p className="fell reveal" style={{ fontFamily:F, fontSize:'13px', lineHeight:1.9, color:INK }}>
-              Founded in the year of our Lord <strong>2015</strong>, True Love Creative has quietly become one of the most trusted design studios operating out of <strong>Dubai, UAE.</strong>
+              Founded in <strong>2015</strong>, True Love Creative has quietly become one of the most trusted design studios operating out of <strong>Dubai, UAE.</strong>
             </p>
             <div style={{ margin:'16px 0', textAlign:'center' }}>
               <span className="stamp">Est. 2015</span>
