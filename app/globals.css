@@ -2,38 +2,122 @@
 @tailwind components;
 @tailwind utilities;
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
-  background: #F2EDE4;
+  background-color: #F2EDE4;
   color: #111111;
+  font-family: var(--font-sans), 'Space Grotesk', system-ui, sans-serif;
   overflow-x: hidden;
   cursor: crosshair;
 }
 
 ::selection { background: #B8390E; color: #F2EDE4; }
 
-body::after {
+/* Grain overlay */
+body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
   pointer-events: none;
-  z-index: 9998;
+  z-index: 9000;
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: #F2EDE4; }
 ::-webkit-scrollbar-thumb { background: #B8390E; }
 
-@keyframes slide {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.ticker { animation: slide 22s linear infinite; display: flex; white-space: nowrap; }
+/* Ticker */
+@keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker-inner { display: flex; white-space: nowrap; animation: slide 24s linear infinite; }
 
-@keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0 } }
-.blink { animation: blink 1.2s step-end infinite; }
+/* Blink cursor */
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.cursor-blink { animation: blink 1.2s step-end infinite; }
+
+/* Fade in on scroll */
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Work row hover */
+.work-row {
+  position: relative;
+  transition: color 0.2s ease;
+  border-bottom: 1px solid rgba(17,17,17,0.08);
+}
+.work-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #111111;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.22s ease;
+  z-index: 0;
+}
+.work-row:hover::after { transform: scaleY(1); }
+.work-row > * { position: relative; z-index: 1; }
+.work-row:hover .row-title { color: #F2EDE4; }
+.work-row:hover .row-type { color: rgba(242,237,228,0.4); }
+.work-row:hover .row-tag { border-color: rgba(242,237,228,0.2); color: rgba(242,237,228,0.4); }
+.work-row:hover .row-num { color: rgba(242,237,228,0.2); }
+.work-row:hover .row-arrow { color: #B8390E; transform: translateX(4px); }
+.row-arrow { transition: transform 0.25s ease, color 0.2s ease; }
+
+/* Hover on graphic cards */
+.graphic-card {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: crosshair;
+}
+.graphic-card:hover { background-color: #111111; }
+.graphic-card:hover .gc-type { color: rgba(242,237,228,0.3); }
+.graphic-card:hover .gc-title { color: #F2EDE4; }
+.graphic-card:hover .gc-sub { color: rgba(242,237,228,0.4); }
+
+/* Service cards */
+.svc-rule { display: block; width: 32px; height: 1px; background: #B8390E; margin-bottom: 24px; }
+
+/* Progress bar */
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 1.5px;
+  background: #B8390E;
+  width: 0%;
+  z-index: 9999;
+  transition: width 0.1s linear;
+}
+
+/* Serif helper */
+.serif { font-family: var(--font-serif), 'Cormorant Garamond', Georgia, serif; }
+.mono { font-family: var(--font-mono), 'Space Mono', monospace; }
+
+/* Mobile menu */
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: #111111;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.mobile-menu.open { opacity: 1; pointer-events: all; }
