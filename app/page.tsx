@@ -1,326 +1,436 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
+const S = {
+  cream: '#F0EAE0',
+  ink: '#0A0A0A',
+  rust: '#C23B18',
+  mist: '#E4DDD4',
+}
+
 const projects = [
-  { id: '001', client: 'Kiko Navarro', type: 'Web Design', year: '2024', tags: ['Web', 'Identity'], img: '/img/portfolios/kikonavarro.jpg' },
-  { id: '002', client: 'Jessica Morari', type: 'Branding & Web', year: '2023', tags: ['Brand', 'Web'], img: '/img/portfolios/jesslnk.webp' },
-  { id: '003', client: 'Javi Beat', type: 'Identity', year: '2024', tags: ['Identity'], img: '/img/portfolios/javibeat.jpg' },
-  { id: '004', client: 'Estrela Photo', type: 'Portfolio', year: '2023', tags: ['Web', 'Photo'], img: '/img/portfolios/estrela.jpg' },
-  { id: '005', client: 'Manuel KevSax', type: 'Web Design', year: '2024', tags: ['Web', 'Booking'], img: '/img/portfolios/manusax.webp' },
-  { id: '006', client: 'Sergio Trumpet', type: 'Web Design', year: '2024', tags: ['Web', 'Portfolio'], img: '/img/portfolios/sergio.jpg' },
-  { id: '007', client: 'Julio Cuba', type: 'Identity', year: '2024', tags: ['Identity', 'Web'], img: '/img/portfolios/julio.webp' },
+  { id: '01', client: 'Kiko Navarro', type: 'Web Design', year: '2024', img: '/img/portfolios/kikonavarro.jpg', desc: 'Legendary DJ & Producer.' },
+  { id: '02', client: 'Jessica Morari', type: 'Branding & Web', year: '2023', img: '/img/portfolios/jesslnk.webp', desc: 'Coaching and wellness platform.' },
+  { id: '03', client: 'Javi Beat', type: 'Identity', year: '2024', img: '/img/portfolios/javibeat.jpg', desc: 'Personal brand & DJ identity.' },
+  { id: '04', client: 'Estrela Photo', type: 'Portfolio', year: '2023', img: '/img/portfolios/estrela.jpg', desc: 'Photography studio portfolio.' },
+  { id: '05', client: 'Manuel KevSax', type: 'Web Design', year: '2024', img: '/img/portfolios/manusax.webp', desc: 'Luxury saxophonist booking platform.' },
+  { id: '06', client: 'Sergio Trumpet', type: 'Portfolio', year: '2024', img: '/img/portfolios/sergio.jpg', desc: 'Professional trumpet player.' },
+  { id: '07', client: 'Julio Cuba', type: 'Identity', year: '2024', img: '/img/portfolios/julio.webp', desc: 'Violinist performance portfolio.' },
 ]
-
-const graphicWork = [
-  { title: 'MAMA CALLING', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
-  { title: 'EL SILENCIO', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
-  { title: 'VARADERO', sub: 'Event Series', type: 'Flyer Design' },
-]
-
-const tickerText = ['SELECTED WORKS', '·', 'KIKO NAVARRO', '·', 'JESSICA MORARI', '·', 'JAVI BEAT', '·', 'ESTRELA PHOTO', '·', 'MANUEL KEVSAX', '·', 'JULIO CUBA', '·', 'NIBANGO', '·']
 
 export default function Home() {
-  const progressRef = useRef<HTMLDivElement>(null)
+  const [hov, setHov] = useState<number | null>(null)
+  const [scrollY, setScrollY] = useState(0)
+  const [activeSection, setActiveSection] = useState('work')
 
   useEffect(() => {
-    // Scroll progress
-    const onScroll = () => {
-      const el = document.documentElement
-      const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100
-      if (progressRef.current) progressRef.current.style.width = pct + '%'
-    }
+    const onScroll = () => setScrollY(window.scrollY)
     window.addEventListener('scroll', onScroll, { passive: true })
 
-    // Fade up observer
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') })
-    }, { threshold: 0.1 })
-    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el))
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) setActiveSection(e.target.id || 'work') })
+    }, { threshold: 0.3 })
+    document.querySelectorAll('section[id]').forEach(el => obs.observe(el))
 
     return () => { window.removeEventListener('scroll', onScroll); obs.disconnect() }
   }, [])
 
-  return (
-    <>
-      {/* Progress bar */}
-      <div id="progress-bar" ref={progressRef} />
+  const navItems = [
+    { label: 'Work', id: 'work' },
+    { label: 'Graphic', id: 'graphic' },
+    { label: 'App', id: 'app' },
+    { label: 'About', id: 'about' },
+    { label: 'Contact', id: 'contact' },
+  ]
 
-      {/* ── NAV ── */}
-      <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 500,
-        height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 40px', background: 'transparent',
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', background: S.cream, color: S.ink }}>
+
+      {/* ── SIDEBAR ── */}
+      <aside style={{
+        position: 'fixed', top: 0, left: 0, bottom: 0,
+        width: '72px',
+        borderRight: `1px solid rgba(10,10,10,0.1)`,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'space-between',
+        padding: '32px 0',
+        zIndex: 100,
+        background: S.cream,
       }}>
-        <a href="#" className="mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(17,17,17,0.6)', textDecoration: 'none' }}>
-          TLC<span className="cursor-blink" style={{ color: '#B8390E' }}>_</span>
+        {/* Studio name — vertical */}
+        <a href="#" style={{ textDecoration: 'none' }}>
+          <div style={{
+            writingMode: 'vertical-rl',
+            textOrientation: 'mixed',
+            transform: 'rotate(180deg)',
+            fontFamily: 'var(--font-mono), monospace',
+            fontSize: '9px',
+            letterSpacing: '0.25em',
+            textTransform: 'uppercase',
+            color: S.ink,
+            lineHeight: 1,
+          }}>
+            True Love Creative
+          </div>
         </a>
-        <nav style={{ display: 'flex', gap: '32px' }}>
-          {['Work', 'Services', 'About', 'Contact'].map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} className="mono"
-              style={{ fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(17,17,17,0.4)', textDecoration: 'none' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#B8390E')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(17,17,17,0.4)')}
-            >{l}</a>
+
+        {/* Nav — vertical */}
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '28px', alignItems: 'center' }}>
+          {navItems.map(n => (
+            <a key={n.id} href={`#${n.id}`}
+              style={{
+                writingMode: 'vertical-rl',
+                textOrientation: 'mixed',
+                transform: 'rotate(180deg)',
+                fontFamily: 'var(--font-mono), monospace',
+                fontSize: '8px',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                color: activeSection === n.id ? S.rust : 'rgba(10,10,10,0.3)',
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
+              onMouseLeave={e => (e.currentTarget.style.color = activeSection === n.id ? S.rust : 'rgba(10,10,10,0.3)')}
+            >{n.label}</a>
           ))}
         </nav>
-      </header>
 
-      {/* ── HERO ── */}
-      <section style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-        {/* Left */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '100px 40px 48px', position: 'relative' }}>
-          <span className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.25)', textTransform: 'uppercase', position: 'absolute', top: '56px', left: '40px' }}>
-            Est. 2015 · Dubai, UAE
-          </span>
+        {/* Bottom — year */}
+        <div style={{
+          fontFamily: 'var(--font-mono), monospace',
+          fontSize: '8px',
+          color: 'rgba(10,10,10,0.2)',
+          letterSpacing: '0.15em',
+        }}>2026</div>
+      </aside>
 
-          <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: '#B8390E', textTransform: 'uppercase', marginBottom: '24px' }}>
-            Web & Graphic Design Studio
+      {/* ── MAIN ── */}
+      <main style={{ marginLeft: '72px', flex: 1, overflow: 'hidden' }}>
+
+        {/* ── HERO ── */}
+        <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 60px 60px', position: 'relative', overflow: 'hidden' }}>
+
+          {/* Ghost letters behind */}
+          <div style={{
+            position: 'absolute',
+            top: '50%', left: '-2%',
+            transform: 'translateY(-50%)',
+            fontFamily: 'var(--font-serif), Georgia, serif',
+            fontSize: 'clamp(180px, 30vw, 400px)',
+            fontWeight: 700,
+            color: 'rgba(10,10,10,0.04)',
+            lineHeight: 1,
+            pointerEvents: 'none',
+            userSelect: 'none',
+            whiteSpace: 'nowrap',
+          }}>TLC</div>
+
+          {/* Top-right tag */}
+          <div style={{ position: 'absolute', top: '36px', right: '60px', textAlign: 'right' }}>
+            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase' }}>Est. 2015 · Dubai</div>
           </div>
 
-          <h1 className="serif" style={{ fontSize: 'clamp(5rem, 14vw, 16rem)', lineHeight: '0.84', fontWeight: 600 }}>
-            <span style={{ display: 'block' }}>TRUE</span>
-            <span style={{ display: 'block', fontStyle: 'italic', color: '#B8390E' }}>LOVE</span>
-            <span style={{ display: 'block' }}>CRE<span style={{ color: '#B8390E' }}>.</span></span>
-          </h1>
-
-          <div style={{ marginTop: '32px', display: 'flex', alignItems: 'flex-end', gap: '32px' }}>
-            <p style={{ fontSize: '12px', color: 'rgba(17,17,17,0.5)', maxWidth: '220px', lineHeight: 1.7, fontFamily: 'var(--font-sans)' }}>
-              High-end digital experiences.<br />
-              Minimalist design, premium execution.<br />
-              <em>From Dubai to the world.</em>
-            </p>
-            <a href="#work" style={{
-              flexShrink: 0, width: '44px', height: '44px',
-              border: '1px solid rgba(17,17,17,0.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '18px', textDecoration: 'none', color: '#111',
-              transition: 'background 0.2s, color 0.2s',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#F2EDE4' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#111' }}
-            >↓</a>
-          </div>
-        </div>
-
-        {/* Right — featured image */}
-        <div style={{ position: 'relative', background: '#D9C9B0', overflow: 'hidden' }}>
-          <Image src="/img/portfolios/kikonavarro.jpg" alt="Kiko Navarro" fill
-            style={{ objectFit: 'cover', filter: 'grayscale(100%)', transition: 'filter 0.7s ease' }}
-            onMouseEnter={e => ((e.currentTarget as HTMLImageElement).style.filter = 'grayscale(0%)')}
-            onMouseLeave={e => ((e.currentTarget as HTMLImageElement).style.filter = 'grayscale(100%)')}
-          />
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(17,17,17,0.08)' }} />
-          <div className="mono" style={{ position: 'absolute', bottom: '24px', left: '24px', fontSize: '9px', color: 'rgba(242,237,228,0.6)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-            Featured — Kiko Navarro / 2024
-          </div>
-        </div>
-      </section>
-
-      {/* ── TICKER ── */}
-      <div style={{ borderTop: '1px solid #111', borderBottom: '1px solid #111', padding: '12px 0', overflow: 'hidden', background: '#111' }}>
-        <div className="ticker-inner">
-          {[...tickerText, ...tickerText, ...tickerText].map((t, i) => (
-            <span key={i} className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(242,237,228,0.35)', padding: '0 20px', textTransform: 'uppercase' }}>{t}</span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── SELECTED WORKS ── */}
-      <section id="work" style={{ padding: '80px 0' }}>
-        <div style={{ padding: '0 40px', marginBottom: '48px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          {/* Main type */}
           <div>
-            <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.3)', textTransform: 'uppercase', marginBottom: '8px' }}>02 — Selected Works</div>
-            <h2 className="serif" style={{ fontSize: 'clamp(2.5rem, 6vw, 6rem)', fontWeight: 600 }}>
-              Projects<span style={{ color: '#B8390E', fontStyle: 'italic' }}>.</span>
-            </h2>
-          </div>
-          <span className="mono" style={{ fontSize: '9px', color: 'rgba(17,17,17,0.2)', letterSpacing: '0.2em' }}>({projects.length} works)</span>
-        </div>
+            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.35em', color: S.rust, textTransform: 'uppercase', marginBottom: '20px' }}>
+              — Web & Graphic Design Studio
+            </div>
 
-        <div style={{ borderTop: '1px solid rgba(17,17,17,0.08)' }}>
-          {projects.map((p) => (
-            <div key={p.id} className="work-row" style={{ padding: '0 40px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', padding: '20px 0' }}>
-                <span className="row-num mono" style={{ fontSize: '10px', width: '32px', flexShrink: 0, color: 'rgba(17,17,17,0.2)' }}>{p.id}</span>
-                <div style={{ position: 'relative', width: '52px', height: '52px', flexShrink: 0, overflow: 'hidden' }}>
-                  <Image src={p.img} alt={p.client} fill style={{ objectFit: 'cover', filter: 'grayscale(100%)' }} />
+            <h1 style={{
+              fontFamily: 'var(--font-serif), Georgia, serif',
+              fontSize: 'clamp(5rem, 16vw, 18rem)',
+              fontWeight: 700,
+              lineHeight: 0.82,
+              letterSpacing: '-0.02em',
+            }}>
+              <span style={{ display: 'block' }}>TRUE</span>
+              <span style={{ display: 'block', color: S.rust, fontStyle: 'italic', fontWeight: 400 }}>LOVE</span>
+              <span style={{ display: 'block' }}>CREATIVE</span>
+            </h1>
+
+            <div style={{ marginTop: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: `1px solid rgba(10,10,10,0.12)`, paddingTop: '24px' }}>
+              <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(10,10,10,0.5)', maxWidth: '300px', lineHeight: 1.8 }}>
+                High-end digital experiences.<br />
+                Minimalist design, premium execution.<br />
+                <em>From Dubai to the world.</em>
+              </p>
+              <a href="#work" style={{
+                fontFamily: 'var(--font-mono), monospace',
+                fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase',
+                color: S.ink, textDecoration: 'none',
+                display: 'flex', alignItems: 'center', gap: '12px',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
+                onMouseLeave={e => (e.currentTarget.style.color = S.ink)}
+              >
+                Selected Works <span style={{ fontSize: '20px' }}>↓</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── WORK ── */}
+        <section id="work">
+          {/* Section header */}
+          <div style={{ padding: '80px 60px 0', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
+            <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 7rem)', fontWeight: 700, lineHeight: 1 }}>
+              Selected<br /><em style={{ color: S.rust, fontWeight: 400 }}>Works<span style={{ color: S.ink }}>.</span></em>
+            </div>
+            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(10,10,10,0.2)', letterSpacing: '0.2em' }}>07 projects</div>
+          </div>
+
+          {/* Project list */}
+          <div style={{ marginTop: '48px' }}>
+            {projects.map((p, i) => (
+              <div key={p.id}
+                onMouseEnter={() => setHov(i)}
+                onMouseLeave={() => setHov(null)}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '60px 1fr auto',
+                  alignItems: 'center',
+                  gap: '32px',
+                  padding: '24px 60px',
+                  borderTop: `1px solid rgba(10,10,10,${hov === i ? '0' : '0.08'})`,
+                  background: hov === i ? S.ink : 'transparent',
+                  transition: 'background 0.2s ease',
+                  cursor: 'crosshair',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Number */}
+                <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', color: hov === i ? 'rgba(240,234,224,0.2)' : 'rgba(10,10,10,0.2)', letterSpacing: '0.1em' }}>{p.id}</span>
+
+                {/* Client + type */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+                  {/* Thumbnail — appears on hover */}
+                  <div style={{
+                    width: hov === i ? '72px' : '0px',
+                    height: '52px',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    transition: 'width 0.3s ease',
+                    position: 'relative',
+                  }}>
+                    <Image src={p.img} alt={p.client} fill style={{ objectFit: 'cover' }} />
+                  </div>
+                  <div>
+                    <div style={{
+                      fontFamily: 'var(--font-serif), Georgia, serif',
+                      fontSize: 'clamp(1.4rem, 3vw, 3rem)',
+                      fontWeight: 600,
+                      color: hov === i ? S.cream : S.ink,
+                      lineHeight: 1.1,
+                      transition: 'color 0.2s',
+                    }}>{p.client}</div>
+                    <div style={{
+                      fontFamily: 'var(--font-mono), monospace',
+                      fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase',
+                      color: hov === i ? 'rgba(240,234,224,0.35)' : 'rgba(10,10,10,0.3)',
+                      marginTop: '4px',
+                      transition: 'color 0.2s',
+                    }}>{p.type} · {p.year}</div>
+                  </div>
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div className="row-title serif" style={{ fontSize: 'clamp(1.2rem, 2.5vw, 2.2rem)', fontWeight: 600, color: '#111', lineHeight: 1.1 }}>{p.client}</div>
-                  <div className="row-type mono" style={{ fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(17,17,17,0.3)', marginTop: '4px' }}>{p.type} · {p.year}</div>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                  {p.tags.map(t => (
-                    <span key={t} className="row-tag mono" style={{ fontSize: '8px', letterSpacing: '0.2em', textTransform: 'uppercase', padding: '4px 8px', border: '1px solid rgba(17,17,17,0.12)', color: 'rgba(17,17,17,0.3)' }}>{t}</span>
-                  ))}
-                </div>
-                <span className="row-arrow" style={{ fontSize: '16px', color: 'rgba(17,17,17,0.2)', flexShrink: 0 }}>→</span>
+
+                {/* Arrow */}
+                <span style={{
+                  fontFamily: 'var(--font-sans), system-ui, sans-serif',
+                  fontSize: '20px',
+                  color: hov === i ? S.rust : 'rgba(10,10,10,0.15)',
+                  transform: hov === i ? 'translateX(4px)' : 'none',
+                  transition: 'all 0.2s ease',
+                }}>→</span>
+              </div>
+            ))}
+            <div style={{ height: '1px', background: 'rgba(10,10,10,0.08)', margin: '0 60px' }} />
+          </div>
+        </section>
+
+        {/* ── STATEMENT ── */}
+        <section style={{ padding: '120px 60px', background: S.ink, overflow: 'hidden' }}>
+          <div style={{
+            fontFamily: 'var(--font-serif), Georgia, serif',
+            fontSize: 'clamp(3rem, 8vw, 10rem)',
+            fontWeight: 700,
+            lineHeight: 0.88,
+            color: S.cream,
+          }}>
+            <div>We craft</div>
+            <div style={{ color: S.rust, fontStyle: 'italic', fontWeight: 400 }}>high-impact</div>
+            <div>digital</div>
+            <div>experiences<span style={{ color: S.rust }}>.</span></div>
+          </div>
+          <div style={{ marginTop: '64px', display: 'flex', justifyContent: 'flex-end' }}>
+            <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(240,234,224,0.45)', maxWidth: '320px', lineHeight: 1.9 }}>
+              Every pixel has a purpose. Every decision is intentional. We don't make pretty things — we make things that work beautifully.
+            </p>
+          </div>
+        </section>
+
+        {/* ── GRAPHIC DESIGN ── */}
+        <section id="graphic" style={{ padding: '120px 60px', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
+          <div style={{ marginBottom: '64px' }}>
+            <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase', marginBottom: '12px' }}>Graphic Design</div>
+            <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 7rem)', fontWeight: 700, lineHeight: 1 }}>
+              Print &<br /><em style={{ color: S.rust, fontWeight: 400 }}>Identity</em>
+            </div>
+          </div>
+
+          {/* Large featured items */}
+          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2px', background: 'rgba(10,10,10,0.06)' }}>
+            {[
+              { title: 'MAMA CALLING', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
+              { title: 'EL SILENCIO', sub: 'Buika × Kiko Navarro', type: 'Vinyl Cover' },
+              { title: 'VARADERO', sub: 'Event Series · 2023', type: 'Flyer Design' },
+            ].map((g, i) => (
+              <div key={g.title}
+                style={{
+                  background: i === 0 ? S.ink : S.mist,
+                  padding: i === 0 ? '64px' : '48px',
+                  gridColumn: i === 0 ? '1 / 2' : 'auto',
+                  transition: 'background 0.3s',
+                  cursor: 'crosshair',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? '#1a1a1a' : S.ink)}
+                onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? S.ink : S.mist)}
+              >
+                <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase', color: i === 0 ? 'rgba(240,234,224,0.3)' : 'rgba(10,10,10,0.3)', marginBottom: '32px' }}>{g.type}</div>
+                <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: i === 0 ? 'clamp(2.5rem, 5vw, 6rem)' : 'clamp(1.8rem, 3vw, 3.5rem)', fontWeight: 700, lineHeight: 0.9, color: i === 0 ? S.cream : S.ink, marginBottom: '16px' }}>{g.title}</div>
+                <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', color: i === 0 ? 'rgba(240,234,224,0.4)' : 'rgba(10,10,10,0.4)', letterSpacing: '0.1em' }}>{g.sub}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── NIBANGO ── */}
+        <section id="app" style={{ background: S.ink, color: S.cream, padding: '120px 60px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.3em', color: 'rgba(240,234,224,0.2)', textTransform: 'uppercase', marginBottom: '24px' }}>App Development</div>
+              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.2em', color: S.rust, textTransform: 'uppercase', marginBottom: '20px' }}>Live · iOS · Android · Web</div>
+              <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(5rem, 10vw, 12rem)', fontWeight: 700, lineHeight: 0.88, color: S.cream, marginBottom: '32px' }}>
+                nib<em style={{ color: S.rust }}>an</em>go<span style={{ color: S.rust }}>.</span>
+              </h2>
+              <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(240,234,224,0.45)', lineHeight: 1.9, maxWidth: '340px', marginBottom: '48px' }}>
+                The marketplace that actually works. Buy. Sell. Bid. Donate. 6 sections, 4 pricing models, real-time chat, zero commissions.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', borderTop: '1px solid rgba(240,234,224,0.08)', paddingTop: '32px' }}>
+                {[['6','Categories'],['4','Pricing'],['3','Platforms'],['0%','Commission']].map(([n,l]) => (
+                  <div key={l}>
+                    <div style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '2.5rem', fontWeight: 700, color: S.cream, lineHeight: 1 }}>{n}</div>
+                    <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', color: 'rgba(240,234,224,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '8px', lineHeight: 1.4 }}>{l}</div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── GRAPHIC DESIGN ── */}
-      <section style={{ padding: '80px 40px', borderTop: '1px solid rgba(17,17,17,0.08)' }}>
-        <div style={{ marginBottom: '48px' }}>
-          <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.3)', textTransform: 'uppercase', marginBottom: '8px' }}>03 — Graphic</div>
-          <h2 className="serif" style={{ fontSize: 'clamp(2.5rem, 6vw, 6rem)', fontWeight: 600 }}>
-            Graphic<br /><em style={{ color: '#B8390E' }}>Design</em>
-          </h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'rgba(17,17,17,0.08)' }}>
-          {graphicWork.map((g) => (
-            <div key={g.title} className="graphic-card" style={{ background: '#F2EDE4', padding: '48px 40px' }}>
-              <div className="gc-type mono" style={{ fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(17,17,17,0.3)', marginBottom: '16px' }}>{g.type}</div>
-              <div className="gc-title serif" style={{ fontSize: 'clamp(1.8rem, 3vw, 3.5rem)', fontWeight: 600, color: '#111', lineHeight: 1 }}>{g.title}</div>
-              <div className="gc-sub mono" style={{ fontSize: '9px', color: 'rgba(17,17,17,0.4)', marginTop: '8px', letterSpacing: '0.1em' }}>{g.sub}</div>
+            <div style={{ position: 'relative', height: '480px' }}>
+              <Image src="/img/portfolios/nibango-mockup-2.png" alt="Nibango" fill style={{ objectFit: 'contain' }} />
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* ── NIBANGO ── */}
-      <section style={{ padding: '80px 40px', background: '#111111', color: '#F2EDE4', borderTop: '1px solid rgba(242,237,228,0.05)' }}>
-        <div style={{ maxWidth: '960px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '64px', alignItems: 'center' }}>
+        {/* ── HOME AGENT ── */}
+        <section style={{ padding: '120px 60px', background: S.mist, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'center' }}>
           <div>
-            <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(242,237,228,0.2)', textTransform: 'uppercase', marginBottom: '24px' }}>04 — App Development</div>
-            <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.2em', color: '#B8390E', textTransform: 'uppercase', marginBottom: '16px' }}>Live on iOS · Android · Web</div>
-            <h2 className="serif" style={{ fontSize: 'clamp(4rem, 8vw, 9rem)', fontWeight: 600, lineHeight: 0.9, color: '#F2EDE4', marginBottom: '24px' }}>
-              nibango<span style={{ color: '#B8390E' }}>.</span>
+            <div style={{ display: 'inline-block', background: S.rust, padding: '6px 16px', marginBottom: '32px' }}>
+              <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase', color: S.cream }}>★ Available for Acquisition</span>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(3rem, 6vw, 8rem)', fontWeight: 700, lineHeight: 0.88, marginBottom: '32px' }}>
+              Home<br />Agent<span style={{ color: S.rust }}>.</span>
             </h2>
-            <p style={{ fontSize: '13px', color: 'rgba(242,237,228,0.5)', lineHeight: 1.8, maxWidth: '340px', marginBottom: '32px', fontFamily: 'var(--font-sans)' }}>
-              The marketplace that actually works. Buy. Sell. Bid. Donate. 6 sections, 4 pricing models, real-time chat, zero commissions.
+            <p style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '13px', color: 'rgba(10,10,10,0.55)', lineHeight: 1.9, maxWidth: '360px', marginBottom: '40px' }}>
+              A fully-designed real estate portfolio platform. Listings, proforma calculator, lead capture — built and ready. No development needed.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-              {[['6','Categories'],['4','Pricing'],['3','Platforms'],['0%','Commission']].map(([n,l]) => (
-                <div key={l}>
-                  <div className="serif" style={{ fontSize: '2.2rem', fontWeight: 600, color: '#F2EDE4', lineHeight: 1 }}>{n}</div>
-                  <div className="mono" style={{ fontSize: '8px', color: 'rgba(242,237,228,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: '6px', lineHeight: 1.3 }}>{l}</div>
+            {['Responsive & mobile-first','Proforma calculator included','Lead capture forms','White-label ready'].map(f => (
+              <div key={f} style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(10,10,10,0.45)', letterSpacing: '0.1em', marginBottom: '10px', display: 'flex', gap: '12px' }}>
+                <span style={{ color: S.rust }}>—</span>{f}
+              </div>
+            ))}
+            <a href="mailto:info@truelovecreative.es?subject=Home Agent"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginTop: '40px', fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: `1px solid ${S.ink}`, padding: '16px 28px', textDecoration: 'none', color: S.ink, transition: 'background 0.2s, color 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = S.ink; e.currentTarget.style.color = S.cream }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = S.ink }}
+            >Acquire this project →</a>
+          </div>
+          <div style={{ position: 'relative', height: '440px' }}>
+            <Image src="/img/portfolios/homeagent.png" alt="Home Agent" fill style={{ objectFit: 'contain', objectPosition: 'center' }} />
+          </div>
+        </section>
+
+        {/* ── ABOUT ── */}
+        <section id="about" style={{ padding: '120px 60px', borderTop: `1px solid rgba(10,10,10,0.08)` }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '120px' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(10,10,10,0.3)', textTransform: 'uppercase', marginBottom: '32px' }}>About the Studio</div>
+              <h2 style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: 'clamp(2.5rem, 5vw, 6rem)', fontWeight: 700, lineHeight: 0.9, marginBottom: '48px' }}>
+                Design with<br /><em style={{ color: S.rust, fontWeight: 400 }}>conviction.</em>
+              </h2>
+              <div style={{ fontFamily: 'var(--font-sans), system-ui, sans-serif', fontSize: '14px', color: 'rgba(10,10,10,0.6)', lineHeight: 1.9 }}>
+                <p style={{ marginBottom: '20px' }}>True Love Creative is a web and graphic design studio founded in 2015. We work with brands that care about how they look and how they make people feel.</p>
+                <p style={{ marginBottom: '20px' }}>Based in Dubai — working globally. Artists, startups, clinics, agencies. We've helped all of them build digital presences that people remember.</p>
+                <p style={{ fontStyle: 'italic', color: S.ink }}>We don't do average. We do work we're proud to sign.</p>
+              </div>
+            </div>
+            <div style={{ paddingTop: '80px' }}>
+              {[['Founded','2015'],['Base','Dubai, UAE'],['Speciality','Web · Graphic · App'],['Languages','ES · EN · AR'],['Email','info@truelovecreative.es'],['Phone','+971 58 532 4519']].map(([l,v], i) => (
+                <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '20px 0', borderBottom: `1px solid rgba(10,10,10,0.08)` }}>
+                  <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(10,10,10,0.3)' }}>{l}</span>
+                  <span style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '1.1rem', fontWeight: 600, textAlign: 'right' }}>{v}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div style={{ position: 'relative', height: '360px' }}>
-            <Image src="/img/portfolios/nibango-mockup-1.png" alt="Nibango" fill style={{ objectFit: 'contain' }} />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── SERVICES ── */}
-      <section id="services" style={{ padding: '80px 40px', borderTop: '1px solid rgba(17,17,17,0.08)' }}>
-        <div style={{ marginBottom: '48px' }}>
-          <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.3)', textTransform: 'uppercase', marginBottom: '8px' }}>05 — Services</div>
-          <h2 className="serif" style={{ fontSize: 'clamp(2.5rem, 6vw, 6rem)', fontWeight: 600 }}>
-            What we<br /><em style={{ color: '#B8390E' }}>do</em>
+        {/* ── CONTACT ── */}
+        <section id="contact" style={{ background: S.ink, color: S.cream, padding: '120px 60px', borderTop: `1px solid rgba(240,234,224,0.06)` }}>
+          <div style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(240,234,224,0.2)', textTransform: 'uppercase', marginBottom: '64px' }}>
+            Start a Project
+          </div>
+          <h2 style={{
+            fontFamily: 'var(--font-serif), Georgia, serif',
+            fontSize: 'clamp(4rem, 13vw, 15rem)',
+            fontWeight: 700,
+            lineHeight: 0.83,
+            color: S.cream,
+            marginBottom: '80px',
+            letterSpacing: '-0.02em',
+          }}>
+            Let's<br />make<br /><em style={{ color: S.rust, fontWeight: 400 }}>something</em><br />great<span style={{ color: S.rust }}>.</span>
           </h2>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '64px' }}>
-          {[
-            { n: '01', t: 'Web Design', d: 'Bespoke websites built with obsessive attention to detail. Performance, aesthetics, conversion.' },
-            { n: '02', t: 'Graphic Design', d: 'Visual identity systems. Logos, print, packaging — everything that makes a brand recognisable.' },
-            { n: '03', t: 'App Development', d: 'From concept to live app. iOS, Android, Web. We build things that work in the real world.' },
-          ].map(s => (
-            <div key={s.n} className="fade-up">
-              <div className="mono" style={{ fontSize: '9px', color: 'rgba(17,17,17,0.2)', marginBottom: '24px', letterSpacing: '0.2em' }}>{s.n}</div>
-              <span className="svc-rule" />
-              <h3 className="serif" style={{ fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)', fontWeight: 600, marginBottom: '16px' }}>{s.t}</h3>
-              <p style={{ fontSize: '12px', color: 'rgba(17,17,17,0.5)', lineHeight: 1.8, fontFamily: 'var(--font-sans)' }}>{s.d}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderTop: '1px solid rgba(240,234,224,0.08)', paddingTop: '48px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <a href="mailto:info@truelovecreative.es"
+                style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '14px', color: 'rgba(240,234,224,0.6)', textDecoration: 'none', letterSpacing: '0.05em', transition: 'color 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.color = S.rust)}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(240,234,224,0.6)')}
+              >info@truelovecreative.es ↗</a>
+              <a href="tel:+971585324519"
+                style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '12px', color: 'rgba(240,234,224,0.3)', textDecoration: 'none' }}>
+                +971 58 532 4519
+              </a>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── HOME AGENT ── */}
-      <section style={{ padding: '80px 40px', background: '#E8E2D9', borderTop: '1px solid rgba(17,17,17,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'start' }}>
-        <div className="fade-up">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#B8390E', color: '#F2EDE4', padding: '6px 14px', marginBottom: '24px' }}>
-            <span className="mono" style={{ fontSize: '8px', letterSpacing: '0.25em', textTransform: 'uppercase' }}>★ Available for Acquisition</span>
+            <a href="mailto:info@truelovecreative.es"
+              style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: '1px solid rgba(240,234,224,0.2)', padding: '18px 36px', textDecoration: 'none', color: S.cream, transition: 'all 0.2s', flexShrink: 0 }}
+              onMouseEnter={e => { e.currentTarget.style.background = S.cream; e.currentTarget.style.color = S.ink }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = S.cream }}
+            >Start a project →</a>
           </div>
-          <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.3)', textTransform: 'uppercase', marginBottom: '8px' }}>Digital Product</div>
-          <h2 className="serif" style={{ fontSize: 'clamp(2.5rem, 5vw, 6rem)', fontWeight: 600, lineHeight: 0.9, marginBottom: '24px' }}>
-            Home<br />Agent<span style={{ color: '#B8390E' }}>.</span>
-          </h2>
-          <p style={{ fontSize: '13px', color: 'rgba(17,17,17,0.6)', lineHeight: 1.8, maxWidth: '360px', marginBottom: '32px', fontFamily: 'var(--font-sans)' }}>
-            A fully-designed personal real estate portfolio platform. Listings, proforma calculator, lead capture — built and ready.
-          </p>
-          {['Responsive & mobile-first', 'Proforma calculator included', 'Lead capture forms', 'White-label ready'].map(f => (
-            <div key={f} className="mono" style={{ fontSize: '9px', color: 'rgba(17,17,17,0.5)', letterSpacing: '0.1em', marginBottom: '10px', display: 'flex', gap: '12px' }}>
-              <span style={{ color: '#B8390E' }}>—</span> {f}
-            </div>
-          ))}
-          <a href="mailto:info@truelovecreative.es?subject=Home Agent Acquisition"
-            className="mono"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '12px', marginTop: '32px', fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: '1px solid #111', padding: '14px 24px', textDecoration: 'none', color: '#111', transition: 'background 0.2s, color 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#111'; e.currentTarget.style.color = '#F2EDE4' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#111' }}
-          >Acquire this project →</a>
-        </div>
-        <div style={{ position: 'relative', height: '400px' }}>
-          <Image src="/img/portfolios/homeagent.png" alt="Home Agent" fill style={{ objectFit: 'contain', objectPosition: 'left' }} />
-        </div>
-      </section>
+        </section>
 
-      {/* ── ABOUT ── */}
-      <section id="about" style={{ padding: '80px 40px', borderTop: '1px solid rgba(17,17,17,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '80px', alignItems: 'end' }}>
-        <div className="fade-up">
-          <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(17,17,17,0.3)', textTransform: 'uppercase', marginBottom: '24px' }}>06 — About</div>
-          <h2 className="serif" style={{ fontSize: 'clamp(2.5rem, 5vw, 6rem)', fontWeight: 600, lineHeight: 0.9, marginBottom: '32px' }}>
-            Design with<br /><em style={{ color: '#B8390E' }}>conviction.</em>
-          </h2>
-          <div style={{ fontSize: '13px', color: 'rgba(17,17,17,0.6)', lineHeight: 1.9, maxWidth: '400px', fontFamily: 'var(--font-sans)' }}>
-            <p style={{ marginBottom: '16px' }}>True Love Creative is a web and graphic design studio founded in 2015. We work with brands that care about how they look and how they make people feel.</p>
-            <p style={{ marginBottom: '16px' }}>Based in Dubai — working globally. Artists, startups, clinics, agencies. We've helped all of them build digital presences that people remember.</p>
-            <p style={{ fontStyle: 'italic', color: 'rgba(17,17,17,0.8)' }}>We don't do average. We do work we're proud to sign.</p>
-          </div>
-        </div>
-        <div className="fade-up">
-          {[['Founded','2015'],['Based in','Dubai, UAE'],['Speciality','Web · Graphic · App'],['Languages','ES · EN · AR'],['Contact','info@truelovecreative.es']].map(([l,v]) => (
-            <div key={l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid rgba(17,17,17,0.08)' }}>
-              <span className="mono" style={{ fontSize: '9px', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(17,17,17,0.3)' }}>{l}</span>
-              <span className="serif" style={{ fontSize: '1.2rem', fontWeight: 600 }}>{v}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+        {/* ── FOOTER ── */}
+        <footer style={{ background: S.ink, borderTop: '1px solid rgba(240,234,224,0.06)', padding: '24px 60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontFamily: 'var(--font-serif), Georgia, serif', fontSize: '13px', color: 'rgba(240,234,224,0.4)', fontWeight: 600 }}>True Love Creative</span>
+          <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(240,234,224,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>© 2015–2026</span>
+          <span style={{ fontFamily: 'var(--font-mono), monospace', fontSize: '9px', color: 'rgba(240,234,224,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Dubai, UAE</span>
+        </footer>
 
-      {/* ── CONTACT ── */}
-      <section id="contact" style={{ background: '#111111', color: '#F2EDE4', padding: '100px 40px', overflow: 'hidden' }}>
-        <div className="mono" style={{ fontSize: '9px', letterSpacing: '0.3em', color: 'rgba(242,237,228,0.2)', textTransform: 'uppercase', marginBottom: '48px' }}>07 — Start a Project</div>
-        <h2 className="serif" style={{ fontSize: 'clamp(4rem, 13vw, 14rem)', fontWeight: 600, lineHeight: 0.85, marginBottom: '64px', color: '#F2EDE4' }}>
-          Let's make<br />
-          <em style={{ color: '#B8390E' }}>something</em><br />
-          great<span style={{ color: '#B8390E' }}>.</span>
-        </h2>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '32px' }}>
-          <div>
-            <a href="mailto:info@truelovecreative.es" className="mono"
-              style={{ display: 'block', fontSize: '14px', color: 'rgba(242,237,228,0.6)', textDecoration: 'none', letterSpacing: '0.05em', marginBottom: '8px', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#B8390E')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(242,237,228,0.6)')}
-            >info@truelovecreative.es ↗</a>
-            <a href="tel:+971585324519" className="mono"
-              style={{ display: 'block', fontSize: '12px', color: 'rgba(242,237,228,0.3)', textDecoration: 'none', letterSpacing: '0.05em', marginBottom: '8px' }}>
-              +971 58 532 4519
-            </a>
-            <div className="mono" style={{ fontSize: '9px', color: 'rgba(242,237,228,0.2)', letterSpacing: '0.25em', textTransform: 'uppercase' }}>Dubai, UAE</div>
-          </div>
-          <a href="mailto:info@truelovecreative.es" className="mono"
-            style={{ fontSize: '10px', letterSpacing: '0.25em', textTransform: 'uppercase', border: '1px solid rgba(242,237,228,0.2)', padding: '16px 32px', textDecoration: 'none', color: '#F2EDE4', transition: 'background 0.2s, color 0.2s', flexShrink: 0 }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F2EDE4'; e.currentTarget.style.color = '#111' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#F2EDE4' }}
-          >Start a project →</a>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer style={{ background: '#111111', borderTop: '1px solid rgba(242,237,228,0.05)', padding: '24px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span className="serif" style={{ fontSize: '14px', color: 'rgba(242,237,228,0.5)', fontWeight: 600 }}>True Love Creative</span>
-        <span className="mono" style={{ fontSize: '9px', color: 'rgba(242,237,228,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>© 2015–2026 · truelovecreative.es</span>
-        <span className="mono" style={{ fontSize: '9px', color: 'rgba(242,237,228,0.2)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Dubai, UAE</span>
-      </footer>
-    </>
+      </main>
+    </div>
   )
 }
