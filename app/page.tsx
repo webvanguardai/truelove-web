@@ -413,9 +413,14 @@ export default function Home() {
                     onMouseEnter={e=>(e.currentTarget.style.background=RED)} onMouseLeave={e=>(e.currentTarget.style.background=INK)}>
                     View Demo →
                   </a>
-                  <a href="mailto:info@truelovecreative.es?subject=Home Agent"
+                  <a href="https://home-agent-eight.vercel.app/admin" target="_blank" rel="noopener noreferrer"
                     style={{ display:'inline-block', fontFamily:E, fontSize:'10px', letterSpacing:'.25em', textTransform:'uppercase', border:`1px solid ${INK}`, color:INK, padding:'12px 24px', textDecoration:'none', transition:'all .15s' }}
                     onMouseEnter={e=>{e.currentTarget.style.background=INK;e.currentTarget.style.color=PAPER}} onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=INK}}>
+                    Dashboard →
+                  </a>
+                  <a href="mailto:info@truelovecreative.es?subject=Home Agent"
+                    style={{ display:'inline-block', fontFamily:E, fontSize:'10px', letterSpacing:'.25em', textTransform:'uppercase', border:`1px solid ${RED}`, color:RED, padding:'12px 24px', textDecoration:'none', transition:'all .15s' }}
+                    onMouseEnter={e=>{e.currentTarget.style.background=RED;e.currentTarget.style.color=PAPER}} onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=RED}}>
                     Acquire →
                   </a>
                 </div>
