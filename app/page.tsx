@@ -32,7 +32,7 @@ const graphicSlides = [
 ]
 
 const nibangoSlides = [
-  '/img/portfolios/nibango-mockup-1.png',
+  '/img/portfolios/nibango-mockup-1.jpg',
   '/img/portfolios/nibango-mockup-2.png',
   '/img/portfolios/nibango-mockup-3.png',
 ]
