@@ -264,54 +264,88 @@ export default function Home() {
         </div>
 
         {/* ══ SELECTED WORKS ════════════════════════════════════ */}
-        <section id="selected" style={{ padding:'32px 0' }}>
-          {/* Header + intro — 2 col magazine layout */}
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'32px', marginBottom:'24px', alignItems:'end' }} className="grid-2">
-            <div>
-              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.3em', textTransform:'uppercase', color:FADE, marginBottom:'8px' }}>Section II</div>
-              <h2 className="playfair" style={{ fontFamily:P, fontSize:'clamp(2rem,5vw,4.5rem)', fontWeight:900, letterSpacing:'-.02em', lineHeight:.9 }}>
+        <section id="selected" style={{ padding:'32px 0', position:'relative', overflow:'hidden' }}>
+
+          {/* Watermark number */}
+          <div style={{ position:'absolute', top:'-20px', right:'-10px', fontFamily:P, fontSize:'clamp(120px,18vw,240px)', fontWeight:900, color:'rgba(26,18,8,0.04)', lineHeight:1, pointerEvents:'none', userSelect:'none', zIndex:0 }}>II</div>
+
+          {/* Header — full width with thick rule top + bottom */}
+          <div style={{ position:'relative', zIndex:1 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:'16px', alignItems:'center', marginBottom:'10px' }}>
+              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.35em', textTransform:'uppercase', color:FADE, whiteSpace:'nowrap' }}>Section II</div>
+              <div style={{ height:'1px', background:RULE }} />
+              <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.2em', color:FADE, whiteSpace:'nowrap' }}>MMXXIII — MMXXIV</div>
+            </div>
+            <div className="rule-h" />
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'32px', padding:'16px 0 12px', alignItems:'end' }} className="grid-2">
+              <h2 className="playfair" style={{ fontFamily:P, fontSize:'clamp(2rem,5vw,4.5rem)', fontWeight:900, letterSpacing:'-.02em', lineHeight:.88 }}>
                 Selected<br /><em style={{ color:RED }}>Works</em>
               </h2>
-            </div>
-            <div>
               <p className="fell" style={{ fontFamily:F, fontSize:'13px', lineHeight:1.9, color:FADE, borderLeft:`2px solid ${RED}`, paddingLeft:'14px' }}>
                 Seven projects. Seven stories. Each one built with the same conviction — that good design is the difference between being remembered and being ignored.
               </p>
-              <div style={{ marginTop:'12px', fontFamily:E, fontSize:'8px', letterSpacing:'.2em', color:FADE, textTransform:'uppercase' }}>MMXXIII — MMXXIV</div>
+            </div>
+            <div className="rule-h" />
+          </div>
+
+          {/* Main body — 2 cols: list left, classifieds right */}
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 180px', gap:'0', position:'relative', zIndex:1 }} className="grid-2">
+
+            {/* Left — work list */}
+            <div style={{ borderRight:`1px solid ${RULE}`, paddingRight:'24px' }}>
+              {projects.map((p, i) => (
+                <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer"
+                  style={{ textDecoration:'none', display:'grid', gridTemplateColumns:'28px 52px 1fr auto', gap:'12px', alignItems:'center', padding:'12px 0', borderBottom:`1px solid ${RULE}`, cursor:'crosshair', transition:'background .15s' }}
+                  onMouseEnter={e=>(e.currentTarget.style.background='rgba(139,26,26,0.04)')}
+                  onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
+                >
+                  <span style={{ fontFamily:E, fontSize:'8px', color:FADE, letterSpacing:'.08em', fontStyle:'italic' }}>{p.id}</span>
+                  <div style={{ width:'52px', height:'38px', position:'relative', overflow:'hidden', flexShrink:0 }}>
+                    <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover', filter:'grayscale(50%)' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily:P, fontSize:'clamp(1rem,2vw,1.8rem)', fontWeight:700, color:INK, lineHeight:1.1 }}>{p.name}</div>
+                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.2em', textTransform:'uppercase', color:FADE, marginTop:'2px' }}>{p.type}</div>
+                  </div>
+                  <span style={{ fontSize:'13px', color:FADE, transition:'all .15s' }} className="wr-arr">↗</span>
+                </a>
+              ))}
+
+              {/* Pull quote between list and photos */}
+              <div style={{ padding:'20px 0 16px', borderBottom:`1px solid ${RULE}` }}>
+                <div style={{ fontFamily:P, fontSize:'clamp(1rem,2.2vw,1.5rem)', fontWeight:900, fontStyle:'italic', color:RED, lineHeight:1.3 }}>
+                  "Good design is the difference between being remembered and being ignored."
+                </div>
+                <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.25em', textTransform:'uppercase', color:FADE, marginTop:'8px' }}>— Studio Philosophy</div>
+              </div>
+            </div>
+
+            {/* Right — classifieds column */}
+            <div style={{ paddingLeft:'16px' }}>
+              <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.3em', textTransform:'uppercase', color:FADE, marginBottom:'8px', paddingTop:'12px' }}>Index</div>
+              <div style={{ height:'1px', background:RULE, marginBottom:'10px' }} />
+              {projects.map(p=>(
+                <div key={p.id} style={{ padding:'7px 0', borderBottom:`1px solid ${RULE}` }}>
+                  <div style={{ fontFamily:P, fontSize:'12px', fontWeight:700, color:INK, lineHeight:1.2 }}>{p.name}</div>
+                  <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.1em', textTransform:'uppercase', color:FADE, marginTop:'2px' }}>{p.type.split('·')[0].trim()}</div>
+                </div>
+              ))}
+              <div style={{ marginTop:'14px', padding:'10px', border:`1px solid ${RULE}`, background:'rgba(139,26,26,0.04)' }}>
+                <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.2em', textTransform:'uppercase', color:RED, marginBottom:'4px' }}>Studio</div>
+                <div style={{ fontFamily:F, fontSize:'11px', fontStyle:'italic', color:INK, lineHeight:1.6 }}>Web · Graphic<br />App · Brand<br />Est. 2015</div>
+              </div>
             </div>
           </div>
-          <div className="rule-h" style={{ marginBottom:'0' }} />
 
-          {/* Works list with image peek on left */}
-          {projects.map((p, i) => (
-            <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', display:'grid', gridTemplateColumns:'36px auto 1fr auto', gap:'16px', alignItems:'center', padding:'14px 0', borderBottom:`1px solid ${RULE}`, transition:'padding-left .2s', cursor:'crosshair' }}
-              className="work-row"
-              onMouseEnter={e=>(e.currentTarget.style.background='rgba(139,26,26,0.03)')}
-              onMouseLeave={e=>(e.currentTarget.style.background='transparent')}
-            >
-              <span style={{ fontFamily:E, fontSize:'9px', color:FADE, letterSpacing:'.1em' }}>{p.id}</span>
-              {/* small thumb */}
-              <div style={{ width:'48px', height:'36px', position:'relative', overflow:'hidden', flexShrink:0, opacity:.7 }}>
-                <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover', filter:'grayscale(40%)' }} />
-              </div>
-              <div>
-                <div className="wr-name" style={{ fontFamily:P, fontSize:'clamp(1.1rem,2.5vw,2rem)', fontWeight:700, color:INK }}>{p.name}</div>
-                <div style={{ fontFamily:E, fontSize:'8px', letterSpacing:'.2em', textTransform:'uppercase', color:FADE, marginTop:'2px' }}>{p.type}</div>
-              </div>
-              <span style={{ fontSize:'14px', color:FADE, transition:'all .15s' }} className="wr-arr">↗</span>
-            </a>
-          ))}
-
-          {/* Photo strip — full bleed 4 col */}
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', marginTop:'28px' }}>
+          {/* Photo strip — 4 col with HP effect */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'2px', marginTop:'24px', position:'relative', zIndex:1 }}>
             {projects.slice(0,4).map(p=>(
               <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:'none', color:'inherit', display:'block' }}>
                 <div className="hp-photo" style={{ position:'relative', aspectRatio:'3/4' }}>
                   <Image src={p.img} alt={p.name} fill style={{ objectFit:'cover' }} />
-                  {/* name overlay */}
-                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'10px 8px', background:'linear-gradient(transparent,rgba(26,18,8,0.75))', zIndex:4 }}>
+                  <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'10px 8px', background:'linear-gradient(transparent,rgba(26,18,8,0.8))', zIndex:4 }}>
                     <div style={{ fontFamily:P, fontSize:'13px', fontWeight:700, color:PAPER, lineHeight:1.2 }}>{p.name}</div>
-                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.15em', textTransform:'uppercase', color:'rgba(244,239,224,0.55)', marginTop:'2px' }}>{p.type}</div>
+                    <div style={{ fontFamily:E, fontSize:'7px', letterSpacing:'.15em', textTransform:'uppercase', color:'rgba(244,239,224,0.5)', marginTop:'2px' }}>{p.type}</div>
                   </div>
                 </div>
               </a>
